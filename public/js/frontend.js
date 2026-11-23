@@ -278,46 +278,6 @@
         });
     });
 
-    /* Tentang: bagian bertumpuk. --p = seberapa jauh bagian sudah tertutup bagian berikutnya (0..1);
-       .is-in = bagian sudah masuk layar (teks muncul halus). */
-    var stack = document.querySelector('[data-about-stack]');
-    if (stack) {
-        var cards = Array.prototype.slice.call(stack.querySelectorAll('[data-about-card]'));
-        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        if ('IntersectionObserver' in window && !reduce) {
-            var seen = new IntersectionObserver(function (entries) {
-                entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('is-in'); seen.unobserve(en.target); } });
-            }, { threshold: 0.25 });
-            stack.classList.add('is-ready');
-            cards.forEach(function (c) { seen.observe(c); });
-        } else {
-            cards.forEach(function (c) { c.classList.add('is-in'); });
-        }
-
-        if (!reduce) {
-            var ticking = false;
-            var update = function () {
-                ticking = false;
-                var vh = window.innerHeight;
-                cards.forEach(function (card, i) {
-                    // Bagian yang lebih tinggi dari layar (HP kecil) tidak ditempelkan, supaya teks bawahnya tetap terbaca.
-                    card.classList.toggle('is-tall', card.scrollHeight > vh + 2);
-                    var next = cards[i + 1];
-                    if (!next || getComputedStyle(card).position !== 'sticky') { card.style.setProperty('--p', 0); return; }
-                    var stickTop = card.getBoundingClientRect().top;
-                    var nextTop = next.getBoundingClientRect().top;
-                    var p = 1 - (nextTop - stickTop) / Math.max(1, vh - stickTop);
-                    card.style.setProperty('--p', Math.min(1, Math.max(0, p)).toFixed(3));
-                });
-            };
-            var onScroll = function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
-            window.addEventListener('scroll', onScroll, { passive: true });
-            window.addEventListener('resize', onScroll);
-            update();
-        }
-    }
-
     /* Video latar: berhenti kalau pengguna memilih "kurangi gerakan". */
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         document.querySelectorAll('video[autoplay]').forEach(function (v) { v.pause(); });
