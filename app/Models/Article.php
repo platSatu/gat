@@ -21,6 +21,7 @@ class Article extends Model
     ];
 
     protected $casts = [
+        'status' => 'integer',
         'date_post' => 'date',
         'read_count' => 'integer',
     ];
@@ -85,6 +86,11 @@ class Article extends Model
 
         if (preg_match('#^https?://#i', $path)) {
             return $path;
+        }
+
+        // Gambar yang diunggah lewat admin baru ada di server ini sendiri → pakai yang lokal.
+        if (is_file(public_path(ltrim($path, '/')))) {
+            return asset(ltrim($path, '/'));
         }
 
         // GAMBAR_URL diisi (mis. https://gbigatsu.id) → gambar diambil dari website lama

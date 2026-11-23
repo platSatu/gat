@@ -5,6 +5,13 @@
     </div>
 @endif
 
+@if (session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Tutup"><span aria-hidden="true">&times;</span></button>
+    </div>
+@endif
+
 @if ($errors->any())
     <div class="alert alert-danger" role="alert">
         Ada isian yang belum benar, silakan periksa kembali.

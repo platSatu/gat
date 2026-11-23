@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
@@ -61,6 +63,9 @@ Route::prefix('auth')->group(function () {
 // Admin: /admin/...
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::view('/', 'backend.dashboard')->name('dashboard');
+    // Admin memakai ID di URL (slug artikel lama bisa kosong/ganda); halaman publik tetap memakai slug.
+    Route::resource('articles', AdminArticleController::class)->except('show')->scoped(['article' => 'id']);
+    Route::resource('categories', AdminCategoryController::class)->except('show');
 });
 
 // Uji koneksi database lama + gambar (HANYA di local, APP_ENV=local). Boleh dihapus setelah selesai.

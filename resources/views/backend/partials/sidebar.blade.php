@@ -6,6 +6,9 @@
     $menu = [
         ['title' => 'Main Menu'],
         ['label' => 'Dashboard', 'icon' => 'mdi-airplay', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard'],
+        ['title' => 'GBI Gatsu'],
+        ['label' => 'Article', 'icon' => 'mdi-file-document', 'route' => 'admin.articles.index', 'active' => 'admin.articles.*'],
+        ['label' => 'Category Article', 'icon' => 'mdi-tag-multiple', 'route' => 'admin.categories.index', 'active' => 'admin.categories.*'],
     ];
 @endphp
 
