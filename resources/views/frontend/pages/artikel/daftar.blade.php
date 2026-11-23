@@ -15,7 +15,7 @@
             <div class="news-list">
                 @forelse ($artikel as $item)
                     <a href="{{ route('articles.show', $item) }}" class="strip-card">
-                        <div class="strip-card__img" style="background-image: url('{{ $item->image_url ?? asset('images/pages/sejarah.jpg') }}')"></div>
+                        <img class="strip-card__photo" src="{{ $item->image_url ?? asset('images/pages/sejarah.jpg') }}" alt="" loading="lazy">
                         <div class="strip-card__body">
                             <h3>{{ $item->title }}</h3>
                             <p>{{ $item->ringkasan(220) }}</p>

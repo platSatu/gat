@@ -17,7 +17,7 @@
             </p>
 
             <article class="article-body">
-                <div class="strip-card__img" style="background-image: url('{{ $article->image_url ?? asset('images/pages/sejarah.jpg') }}')"></div>
+                <img class="strip-card__photo" src="{{ $article->image_url ?? asset('images/pages/sejarah.jpg') }}" alt="{{ $article->title }}">
                 <div class="strip-card__body article-content">
                     {!! $article->isi !!}
                 </div>

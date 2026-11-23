@@ -411,6 +411,9 @@ body.is-locked { overflow: hidden; }
     background: #222 center / cover no-repeat; filter: grayscale(1);
     display: grid; place-items: center;
 }
+/* Gambar artikel utuh (daftar & detail artikel): menggantikan strip gambar yang terpotong */
+.strip-card__photo { display: block; width: 100%; height: auto; border-radius: var(--radius) var(--radius) 0 0; background: #222; filter: grayscale(1); }
+.strip-card__photo + .strip-card__body { margin-top: 0; border-radius: 0 0 var(--radius) var(--radius); }
 .strip-card__img span { color: var(--white); font-size: clamp(15px, 1.4vw, 20px); font-weight: 700; filter: none; }
 .strip-card__body {
     position: relative; margin-top: -22px; padding: 26px clamp(20px, 4vw, 110px);
@@ -595,13 +598,13 @@ body.is-locked { overflow: hidden; }
 .featured .dots { position: absolute; top: 18px; right: 46px; }
 .featured .dots button { background: #9a9a9a; }
 .featured .dots button.is-active { background: #111; }
-.featured img { width: 100%; height: clamp(200px, 26vw, 340px); border-radius: 20px; object-fit: cover; }
+.featured img { display: block; width: 100%; height: auto; border-radius: 20px; } /* gambar artikel tampil utuh, tinggi mengikuti gambar */
 
 .list-head { display: flex; align-items: center; justify-content: space-between; margin: 60px 0 12px; }
 .list-head h2 { font-size: 16px; font-weight: 500; }
 .list-head .btn-pill { min-width: 200px; font-weight: 600; }
 .article-card { display: block; border-radius: var(--radius); overflow: hidden; background: var(--cream); color: var(--ink); text-decoration: none; }
-.article-card img { width: 100%; height: clamp(110px, 12vw, 160px); object-fit: cover; }
+.article-card img { display: block; width: 100%; height: auto; }
 .article-card__body { min-height: 170px; padding: 22px 26px; }
 .article-card__body h3 { font-size: 18px; margin-bottom: 8px; }
 .article-card__body p { font-size: 14px; line-height: 1.5; color: var(--text); }
@@ -640,7 +643,7 @@ body.is-locked { overflow: hidden; }
 .related { max-width: 900px; margin: 34px auto 0; display: grid; gap: 14px; }
 .related h2 { font-size: 18px; }
 .related-card { display: grid; grid-template-columns: 300px 1fr; gap: 16px; padding: 12px; border-radius: var(--radius); background: var(--cream); color: var(--ink); text-decoration: none; }
-.related-card img { width: 100%; height: 130px; border-radius: 16px; object-fit: cover; filter: grayscale(1); }
+.related-card img { display: block; width: 100%; height: auto; align-self: start; border-radius: 16px; filter: grayscale(1); }
 .related-card h3 { font-size: 17px; margin: 14px 0 8px; }
 .related-card p { font-size: 13px; line-height: 1.5; color: var(--text); }
 .related .btn-pill { justify-self: center; min-width: 200px; margin-top: 10px; }
@@ -740,6 +743,7 @@ body.is-locked { overflow: hidden; }
     .category-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
     .category-grid .strip-card__img { height: 64px; }
     .category-grid .strip-card__img span { font-size: 14px; }
+    .category-grid .strip-card__body h3 { font-size: 13px; margin-bottom: 6px; }
     .category-grid .strip-card__body { padding: 18px 10px 14px; font-size: 10px; }
     .results { grid-template-columns: 1fr 1fr; }
     .result { grid-template-columns: 1fr; gap: 8px; margin-top: 0; }
@@ -747,7 +751,6 @@ body.is-locked { overflow: hidden; }
     .result h4 { font-size: 11px; }
     .result p { font-size: 10px; }
     .related-card { grid-template-columns: 45% 1fr; }
-    .related-card img { height: 100%; min-height: 110px; }
     .related-card h3 { margin-top: 4px; font-size: 13px; }
     .related-card p { font-size: 11px; }
 

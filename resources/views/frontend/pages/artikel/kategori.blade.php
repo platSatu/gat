@@ -3,7 +3,7 @@
 @section('title', __('Kategori'))
 
 @section('content')
-    {{-- Figma "Kategori": kartu (strip gambar + deskripsi). Kategori dari database; gambar = artikel terbaru di kategori itu. --}}
+    {{-- Figma "Kategori": kartu (gambar utuh + nama kategori + deskripsi). Kategori dari database; gambar = artikel terbaru di kategori itu. --}}
     @php
         // Deskripsi untuk kategori yang namanya sama dengan desain Figma; kategori lain cukup jumlah artikelnya.
         $deskripsi = [
@@ -25,8 +25,9 @@
             <div class="category-grid">
                 @foreach ($kategori as $item)
                     <a href="{{ route('articles.category', $item) }}" class="strip-card">
-                        <div class="strip-card__img" style="background-image: url('{{ $item->sampul?->image_url ?? asset($cadangan[$loop->index % 4]) }}')"><span>{{ $item->name }}</span></div>
+                        <img class="strip-card__photo" src="{{ $item->sampul?->image_url ?? asset($cadangan[$loop->index % 4]) }}" alt="" loading="lazy">
                         <div class="strip-card__body">
+                            <h3>{{ $item->name }}</h3>
                             @isset($deskripsi[$item->name]){{ __($deskripsi[$item->name]) }}<br>@endisset
                             <small>{{ $item->artikel_count }} {{ __('artikel') }}</small>
                         </div>
