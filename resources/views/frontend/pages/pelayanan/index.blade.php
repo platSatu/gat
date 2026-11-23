@@ -40,7 +40,9 @@
         ];
     @endphp
 
-    <section class="ministry-list" id="daftar-pelayanan">
+    {{-- Saat digulir, etalase menempel di layar dan berganti ke pelayanan berikutnya (frontend.js "Etalase pelayanan"). --}}
+    <section class="ministry-list" id="daftar-pelayanan" data-showcase-scroll style="--slides: {{ count($pelayanan) }}">
+        <div class="ministry-list__pin">
         <div class="ministry-showcase" data-showcase>
             <div class="ministry-showcase__thumbs" role="tablist" aria-label="{{ __('Pilih pelayanan') }}">
                 @foreach ($pelayanan as $item)
@@ -81,6 +83,7 @@
                     </div>
                 </article>
             @endforeach
+        </div>
         </div>
     </section>
 @endsection

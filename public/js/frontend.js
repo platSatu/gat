@@ -278,7 +278,7 @@
         });
     });
 
-    /* Etalase pelayanan (halaman Pelayanan): gambar kecil / tombol "berikutnya" mengganti pelayanan yang tampil. */
+    /* Etalase pelayanan (halaman Pelayanan): berganti pelayanan saat digulir, atau lewat gambar kecil / tombol "berikutnya". */
     document.querySelectorAll('[data-showcase]').forEach(function (box) {
         var tabs = box.querySelectorAll('[data-showcase-tab]');
         var slides = box.querySelectorAll('[data-showcase-slide]');
@@ -288,12 +288,46 @@
             slides.forEach(function (s, n) { s.hidden = n !== current; s.classList.toggle('is-active', n === current); });
             tabs.forEach(function (t, n) { t.classList.toggle('is-active', n === current); t.setAttribute('aria-selected', n === current ? 'true' : 'false'); });
         }
-        tabs.forEach(function (t, n) { t.addEventListener('click', function () { show(n); }); });
-        box.querySelectorAll('[data-showcase-next]').forEach(function (b) { b.addEventListener('click', function () { show(current + 1); }); });
+        // Mode gulir: etalase menempel, pelayanan berganti sesuai posisi gulir di dalam bagian ini.
+        var scroller = box.closest('[data-showcase-scroll]');
+        function scrollMode() { return scroller && !scroller.classList.contains('is-static'); }
+        function checkFit() {
+            if (scroller) scroller.classList.toggle('is-static', box.offsetHeight + 110 > window.innerHeight);
+        }
+        function fromScroll() {
+            if (!scrollMode()) return;
+            var r = scroller.getBoundingClientRect();
+            var distance = scroller.offsetHeight - window.innerHeight;
+            var p = distance > 0 ? Math.min(.999, Math.max(0, -r.top / distance)) : 0;
+            var i = Math.floor(p * slides.length);
+            if (i !== current) show(i);
+        }
+        function go(i) {
+            i = (i + slides.length) % slides.length;
+            if (!scrollMode()) { show(i); return; }
+            var distance = scroller.offsetHeight - window.innerHeight;
+            var top = scroller.getBoundingClientRect().top + window.pageYOffset;
+            window.scrollTo({ top: top + distance * (i + .5) / slides.length, behavior: 'smooth' });
+        }
+        if (scroller) {
+            var queued = false;
+            window.addEventListener('scroll', function () {
+                if (queued) return;
+                queued = true;
+                requestAnimationFrame(function () { queued = false; fromScroll(); });
+            }, { passive: true });
+            window.addEventListener('resize', function () { checkFit(); fromScroll(); });
+            checkFit();
+            fromScroll();
+        }
+
+        tabs.forEach(function (t, n) { t.addEventListener('click', function () { go(n); }); });
+        box.querySelectorAll('[data-showcase-next]').forEach(function (b) { b.addEventListener('click', function () { go(current + 1); }); });
         box.addEventListener('keydown', function (e) {
             if (e.target.closest('[data-showcase-tab]') && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
-                show(current + (e.key === 'ArrowRight' ? 1 : -1));
-                tabs[current].focus();
+                var target = (current + (e.key === 'ArrowRight' ? 1 : -1) + slides.length) % slides.length;
+                go(target);
+                tabs[target].focus();
             }
         });
     });
