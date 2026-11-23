@@ -891,6 +891,35 @@ body.is-locked { overflow: hidden; }
 /* =========================================================================
    12. Komunitas, kontak & memberi
    ========================================================================= */
+/* Komunitas (Figma "Desktop - 7" revisi): satu layar penuh, kiri kotak teks + 2 tautan, kanan foto. */
+.cool-page { min-height: 100svh; padding: clamp(96px, 8.6vw, 124px) clamp(16px, 2.2vw, 32px) clamp(24px, 4vw, 60px); background: var(--cream); }
+.cool-page__grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 2vw, 28px);
+    height: calc(100svh - clamp(96px, 8.6vw, 124px) - clamp(24px, 4vw, 60px)); min-height: 480px;
+}
+.cool-page__left { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: clamp(14px, 1.7vw, 24px); min-height: 0; }
+.cool-page__intro { overflow: auto; padding: clamp(20px, 2vw, 30px) clamp(20px, 1.9vw, 28px); border-radius: 20px; background: var(--slate); color: var(--white); }
+.cool-page__intro h1 { margin-bottom: clamp(12px, min(2vw, 2.9svh), 30px); font-size: clamp(18px, min(1.95vw, 2.9svh), 30px); letter-spacing: -.005em; font-weight: 600; text-transform: uppercase; line-height: 1.2; }
+.cool-page__intro p { font-size: clamp(14px, min(1.75vw, 2.6svh), 27px); line-height: 1.48; } /* ikut tinggi layar supaya tetap muat satu layar */
+.cool-page__intro p + p { margin-top: 1.48em; }
+.cool-page__links { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 1.1vw, 16px); }
+.cool-page__link {
+    position: relative; display: block; height: clamp(110px, min(14vw, 19.6svh), 201px); padding: clamp(16px, 1.5vw, 22px) clamp(16px, 1.3vw, 20px);
+    border-radius: 20px; background: var(--slate); color: var(--white); text-decoration: none;
+    transition: background .2s, transform .2s;
+}
+.cool-page__link:hover { background: var(--slate-dark); transform: translateY(-2px); }
+.cool-page__link span { display: block; max-width: 140px; font-size: clamp(16px, 1.55vw, 22px); font-weight: 600; line-height: 1.36; }
+.cool-page__link svg { position: absolute; right: clamp(14px, 1.4vw, 20px); bottom: clamp(14px, 1.4vw, 20px); width: clamp(26px, 2.2vw, 32px); height: clamp(26px, 2.2vw, 32px); }
+.cool-page__photo { margin: 0; overflow: hidden; border-radius: 20px; background: var(--slate); }
+.cool-page__photo img { width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 991px) {
+    .cool-page__grid { grid-template-columns: 1fr; height: auto; min-height: 0; }
+    .cool-page__left { grid-template-rows: auto auto; }
+    .cool-page__intro { overflow: visible; }
+    .cool-page__photo { order: -1; aspect-ratio: 4 / 3; }
+}
+
 .cool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; min-height: clamp(520px, 52vw, 700px); }
 .cool-grid__left { display: grid; grid-template-rows: 1fr auto; gap: 16px; }
 .cool-intro { padding: clamp(22px, 2.4vw, 34px); }
