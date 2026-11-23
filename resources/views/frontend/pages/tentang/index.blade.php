@@ -13,21 +13,29 @@
                 'button' => __('Ikuti Perjalanan GBI Gatsu'), 'url' => route('about.history'),
             ],
             [
-                'title' => __('Dipimpin dalam Ketaatan kepada Tuhan'), 'image' => 'images/about/dipimpin.jpg',
+                'title' => __('Dipimpin dalam Ketaatan kepada Tuhan'), 'image' => 'images/about/dipimpin.jpg', 'figma' => 'images/about/dipimpin-figma.png',
                 'text' => __('GBI Gatsu digembalakan oleh Pdt. Dr. Ir. Niko Njotorahardjo sebagai Gembala Jemaat, Gembala Pembina, sekaligus Bapa Rohani. Perjalanan pelayanannya dimulai dari panggilan Tuhan untuk melayani secara penuh waktu dan membawa umat-Nya masuk ke dalam hadirat Tuhan melalui doa, pujian, dan penyembahan.'),
                 'button' => __('Lihat Selengkapnya'), 'url' => route('about.history'),
             ],
             [
-                'title' => __('Menghidupi Panggilan Restorasi Pondok Daud'), 'image' => 'images/about/restorasi.jpg',
+                'title' => __('Menghidupi Panggilan Restorasi Pondok Daud'), 'image' => 'images/about/restorasi.jpg', 'figma' => 'images/about/restorasi-figma.png',
                 'text' => __('Sejak awal, GBI Gatsu menerima panggilan khusus untuk merestorasi Pondok Daud. Panggilan ini diwujudkan dengan membangun prajurit-prajurit Tuhan yang gagah perkasa, yang memiliki gaya hidup doa, pujian, dan penyembahan dalam unity siang dan malam, serta melakukan kehendak Bapa pada zaman ini.'),
                 'button' => __('Pahami Panggilan yang Kami Hidupi'), 'url' => route('about.dna'),
             ],
             [
-                'title' => __('Berakar dalam Firman, Melangkah dalam Iman'), 'image' => 'images/about/berakar.jpg',
+                'title' => __('Berakar dalam Firman, Melangkah dalam Iman'), 'image' => 'images/about/berakar.jpg', 'figma' => 'images/about/berakar-figma.png',
                 'text' => __('Sebagai bagian dari Gereja Bethel Indonesia, GBI Gatsu berpegang pada Alkitab sebagai dasar iman dan kehidupan. Setiap pengajaran, pelayanan, dan langkah gereja diarahkan untuk membawa umat semakin mengenal Kristus, hidup dalam kuasa Roh Kudus, bertumbuh dalam kebenaran firman Tuhan, dan mengerjakan Amanat Agung.'),
                 'button' => __('Kenali Dasar Iman Kami'), 'url' => route('about.dna'),
             ],
         ];
+        // Pakai gambar dari Figma (sudah bernuansa biru) kalau filenya sudah ada di public/images/about.
+        foreach ($blocks as &$item) {
+            if (isset($item['figma']) && file_exists(public_path($item['figma']))) {
+                $item['image'] = $item['figma'];
+                $item['tinted'] = true;
+            }
+        }
+        unset($item);
     @endphp
 
     @foreach ($blocks as $block)
