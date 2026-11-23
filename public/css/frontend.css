@@ -91,12 +91,22 @@ body.is-locked { overflow: hidden; }
 .dots button.is-active { background: var(--white); }
 
 /* 4. Header & Menu ----------------------------------------------------- */
+/* Header (logo, bahasa, menu) diam di atas saat digulung; ukuran & posisinya tidak berubah. Latar muncul setelah digulung (.is-scrolled, dari frontend.js):
+   slate untuk logo putih, putih untuk logo gelap (header_theme dark). */
 .site-header {
-    position: absolute; inset: 0 0 auto 0; z-index: 30;
+    position: fixed; inset: 0 0 auto 0; z-index: 30;
     display: flex; align-items: center; justify-content: space-between;
     padding: clamp(20px, 3vw, 40px) var(--gutter);
     pointer-events: none;
+    transition: background-color .3s, box-shadow .3s;
 }
+.site-header.is-scrolled {
+    background: rgba(70, 104, 131, .92);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, .15);
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    pointer-events: auto;
+}
+.site-header--dark.is-scrolled { background: rgba(255, 255, 255, .92); }
 .site-header > * { pointer-events: auto; }
 .site-logo img { width: clamp(150px, 16vw, 230px); height: auto; }
 
@@ -110,11 +120,8 @@ body.is-locked { overflow: hidden; }
 }
 .menu-toggle svg { width: 16px; height: 16px; }
 
-/* Bahasa + Menu: tetap diam di kanan atas saat halaman digulung (logo tetap ikut tergulung). */
-.site-header__actions {
-    position: fixed; top: clamp(20px, 3vw, 40px); right: var(--gutter); z-index: 40;
-    display: flex; align-items: stretch; gap: 12px;
-}
+/* Bahasa + Menu di kanan header */
+.site-header__actions { display: flex; align-items: stretch; gap: 12px; }
 
 /* Pilihan bahasa (Figma "BAHASA"): pill biru berisi dua bendera */
 .lang-switch {
