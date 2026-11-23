@@ -281,7 +281,9 @@ body.is-locked { overflow: hidden; }
 
 /* 6b. Panggilan Kami */
 .home-calling {
-    padding: clamp(64px, 9vw, 130px) var(--gutter) clamp(56px, 7vw, 100px);
+    min-height: 100svh; /* satu layar penuh, berapa pun ukuran layarnya; isi di tengah */
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: clamp(80px, 9vw, 130px) var(--gutter) clamp(56px, 7vw, 100px);
     text-align: center; color: var(--slate);
 }
 .home-calling h2 { font-size: clamp(40px, 5.6vw, 80px); font-weight: 800; letter-spacing: -.01em; }
@@ -308,7 +310,7 @@ body.is-locked { overflow: hidden; }
 }
 .home-nearest__inner {
     display: grid; grid-template-columns: 1.15fr 1fr; align-items: center; gap: 32px;
-    min-height: clamp(420px, 42vw, 620px);
+    min-height: 100svh; /* satu layar penuh */
     padding-block: 56px;
 }
 .home-nearest__eyebrow { font-size: clamp(20px, 2.2vw, 32px); }
@@ -320,12 +322,14 @@ body.is-locked { overflow: hidden; }
 
 /* 6d. Kegiatan (slider kartu) */
 .home-events {
-    margin-top: 16px; padding: clamp(32px, 4vw, 56px) 0 clamp(24px, 3vw, 40px);
+    min-height: 100svh; /* satu layar penuh; isi di tengah */
+    display: flex; flex-direction: column; justify-content: center;
+    margin-top: 16px; padding: clamp(80px, 8vw, 110px) 0 clamp(24px, 3vw, 40px);
     border-radius: var(--radius-lg);
     background: var(--slate);
 }
 .home-events__track {
-    display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 2 * 24px) / 3); gap: 24px;
+    width: 100%; display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 2 * 24px) / 3); gap: 24px;
     overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
     padding-inline: var(--gutter); scroll-padding-inline: var(--gutter);
     max-width: var(--container); margin-inline: auto;
@@ -348,7 +352,11 @@ body.is-locked { overflow: hidden; }
 .home-events__nav .round-btn { border: 0; width: 32px; height: 32px; }
 
 /* 6e. Pelayanan dan mitra */
-.home-partners { padding: clamp(40px, 5vw, 64px) 0 clamp(48px, 6vw, 80px); text-align: center; }
+.home-partners {
+    min-height: calc(100svh - 44px); /* satu layar penuh bersama footer (±44px) */
+    display: flex; flex-direction: column; justify-content: center;
+    padding: clamp(80px, 8vw, 110px) 0 clamp(48px, 6vw, 80px); text-align: center;
+}
 .home-partners h2 { font-size: clamp(18px, 2vw, 28px); font-weight: 800; margin-bottom: clamp(28px, 4vw, 56px); }
 .home-partners__list {
     display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
