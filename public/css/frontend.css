@@ -743,7 +743,6 @@ body.is-locked { overflow: hidden; }
     .category-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
     .category-grid .strip-card__img { height: 64px; }
     .category-grid .strip-card__img span { font-size: 14px; }
-    .category-grid .strip-card__body h3 { font-size: 13px; margin-bottom: 6px; }
     .category-grid .strip-card__body { padding: 18px 10px 14px; font-size: 10px; }
     .results { grid-template-columns: 1fr 1fr; }
     .result { grid-template-columns: 1fr; gap: 8px; margin-top: 0; }
