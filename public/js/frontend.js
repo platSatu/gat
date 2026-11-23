@@ -350,6 +350,43 @@
         restart();
     });
 
+    /* Geser dengan mouse: [data-drag-scroll] bisa diseret ke kiri/kanan (dengan efek meluncur), di HP pakai geser jari bawaan. */
+    document.querySelectorAll('[data-drag-scroll]').forEach(function (track) {
+        var down = false, moved = false, startX = 0, startLeft = 0, lastX = 0, lastT = 0, speed = 0, glide = 0;
+
+        track.addEventListener('pointerdown', function (e) {
+            if (e.pointerType !== 'mouse' || e.button !== 0) return;
+            cancelAnimationFrame(glide);
+            down = true; moved = false;
+            startX = lastX = e.clientX; startLeft = track.scrollLeft; lastT = performance.now(); speed = 0;
+        });
+        window.addEventListener('pointermove', function (e) {
+            if (!down) return;
+            var dx = e.clientX - startX;
+            if (!moved && Math.abs(dx) > 5) { moved = true; track.classList.add('is-dragging'); }
+            if (!moved) return;
+            e.preventDefault();
+            track.scrollLeft = startLeft - dx;
+            var now = performance.now();
+            speed = (e.clientX - lastX) / Math.max(1, now - lastT);
+            lastX = e.clientX; lastT = now;
+        });
+        window.addEventListener('pointerup', function () {
+            if (!down) return;
+            down = false;
+            if (!moved) return;
+            // Meluncur sebentar sesuai kecepatan seret, lalu kembali menempel ke kartu terdekat.
+            var v = speed * 16;
+            (function step() {
+                if (Math.abs(v) < 0.5) { track.classList.remove('is-dragging'); return; }
+                track.scrollLeft -= v; v *= 0.92;
+                glide = requestAnimationFrame(step);
+            })();
+        });
+        // Klik setelah menyeret tidak membuka link.
+        track.addEventListener('click', function (e) { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
+    });
+
     /* Video latar: berhenti kalau pengguna memilih "kurangi gerakan". */
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         document.querySelectorAll('video[autoplay]').forEach(function (v) { v.pause(); });

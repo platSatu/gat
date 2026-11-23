@@ -27,7 +27,7 @@
                 <div class="teach-section-head">
                     <h2><a href="{{ route('articles.categories') }}">{{ __('Kategori') }}</a></h2>
                 </div>
-                <div class="teach-cats" aria-label="{{ __('Kategori') }}">
+                <div class="teach-cats" data-drag-scroll aria-label="{{ __('Kategori') }}">
                     @foreach ($kategori as $item)
                         <a href="{{ route('articles.category', $item) }}" class="teach-cat">
                             <div class="teach-cat__img">
