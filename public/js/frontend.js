@@ -123,6 +123,14 @@
         onScroll();
     }
 
+    /* Header tetap di atas: beri latar setelah halaman digulung sedikit. */
+    var siteHeader = document.querySelector('[data-site-header]');
+    if (siteHeader) {
+        var onHeaderScroll = function () { siteHeader.classList.toggle('is-scrolled', window.scrollY > 40); };
+        window.addEventListener('scroll', onHeaderScroll, { passive: true });
+        onHeaderScroll();
+    }
+
     /* Video latar: berhenti kalau pengguna memilih "kurangi gerakan". */
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         document.querySelectorAll('video[autoplay]').forEach(function (v) { v.pause(); });
