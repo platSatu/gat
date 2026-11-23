@@ -3,11 +3,12 @@
 @section('title', __('Tentang Gatsu'))
 
 @section('content')
-    {{-- Figma "Desktop - 2": 4 bagian foto layar penuh. Isi sementara di $blocks; nanti dari admin. --}}
+    {{-- Figma "Desktop - 2" (revisi): 4 bagian foto lebar (16:9) bernuansa biru, teks rata kiri di bawah.
+         Isi sementara di $blocks; nanti dari admin. 'tinted' = gambar sudah bernuansa biru dari Figma (tidak diwarnai lagi). --}}
     @php
         $blocks = [
             [
-                'title' => __('Mengenal GBI Gatsu'), 'subtitle' => __('Berawal dari sebuah panggilan'), 'image' => 'images/about/mengenal.jpg',
+                'title' => __('Mengenal GBI Gatsu'), 'subtitle' => __('Berawal dari sebuah panggilan'), 'image' => 'images/about/mengenal-figma.jpg', 'tinted' => true,
                 'text' => __('GBI Jl. Jend. Gatot Subroto, atau yang lebih dikenal sebagai GBI Gatsu, adalah gereja lokal di bawah naungan Sinode Gereja Bethel Indonesia. Berdiri sejak 4 September 1988 di Jakarta, GBI Gatsu terus bertumbuh menjadi sebuah keluarga besar gereja apostolik yang terdiri dari rayon, cabang khusus, dan gereja-gereja cabang di bawah pembinaannya.'),
                 'button' => __('Ikuti Perjalanan GBI Gatsu'), 'url' => route('about.history'),
             ],
@@ -30,13 +31,13 @@
     @endphp
 
     @foreach ($blocks as $block)
-        <section class="about-block">
+        <section @class(['about-block', 'about-block--tinted' => $block['tinted'] ?? false])>
             <img class="about-block__img" src="{{ asset($block['image']) }}" alt="" @if (! $loop->first) loading="lazy" @endif>
-            <div class="container">
+            <div class="about-block__content">
                 <h2>{{ $block['title'] }}</h2>
                 @isset($block['subtitle'])<h3>{{ $block['subtitle'] }}</h3>@endisset
                 <p>{{ $block['text'] }}</p>
-                <a href="{{ $block['url'] }}" class="btn-pill btn-sm text-ink">{{ $block['button'] }}</a>
+                <a href="{{ $block['url'] }}" class="btn-pill about-block__btn">{{ $block['button'] }}</a>
             </div>
         </section>
     @endforeach

@@ -5,13 +5,13 @@
 
 @section('content')
     {{--
-        Figma "DNA Kami" + komponen "Pentakosta Ketiga" & "Restorasi Pondok Daud":
-        kartu bisa dibalik (klik/tap) untuk menampilkan penjelasannya.
+        Figma "Desktop - 9" (detail Tentang) + komponen "Pentakosta Ketiga" & "Restorasi Pondok Daud":
+        dua kartu persegi, bisa dibalik (klik/tap) untuk menampilkan penjelasannya.
     --}}
     @php
         $cards = [
             [
-                'front' => 'Pentakosta <em>Ketiga</em>',
+                'front' => '<span class="is-medium">Pentakosta</span><em>Ketiga</em>',
                 'title' => 'Pentakosta Ketiga',
                 'body' => [
                     'Pentakosta Ketiga adalah pencurahan Roh Kudus yang dahsyat di zaman ini melebihi yang terjadi di Azusa Street.',

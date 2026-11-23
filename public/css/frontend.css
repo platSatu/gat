@@ -551,28 +551,39 @@ body.is-locked { overflow: hidden; }
 /* =========================================================================
    8. Tentang Gatsu
    ========================================================================= */
-.about-block {
-    position: relative; isolation: isolate;
-    min-height: 100svh; display: flex; align-items: flex-end;
-    padding: 120px 0 clamp(40px, 6vw, 70px);
-    color: var(--white);
+.about-block { /* Figma revisi: foto lebar 16:9 bernuansa biru, teks rata kiri di bagian bawah */
+    position: relative; isolation: isolate; overflow: hidden;
+    min-height: max(56.25vw, 520px); display: flex; align-items: flex-end;
+    padding: 120px 0 clamp(28px, 2.8vw, 40px);
+    background: var(--slate); color: var(--white);
 }
-.about-block__img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; filter: grayscale(.4); }
-.about-block::after {
+.about-block__img { position: absolute; inset: 0; z-index: -3; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(.95); }
+.about-block::before { /* mewarnai foto hitam-putih menjadi biru seperti di Figma */
+    content: ''; position: absolute; inset: 0; z-index: -2;
+    background: var(--slate); mix-blend-mode: multiply; opacity: .85;
+}
+.about-block::after { /* makin gelap ke bawah supaya teks terbaca */
     content: ''; position: absolute; inset: 0; z-index: -1;
-    background: linear-gradient(180deg, rgba(70, 104, 131, .45) 0%, rgba(70, 104, 131, .55) 55%, var(--slate) 100%);
+    background:
+        linear-gradient(180deg, rgba(70, 104, 131, .15) 0%, rgba(70, 104, 131, 0) 35%, rgba(29, 43, 58, .75) 100%),
+        linear-gradient(90deg, rgba(29, 43, 58, .25) 0%, transparent 40%);
 }
-.about-block h2 { font-size: clamp(28px, 3.2vw, 46px); font-weight: 800; text-transform: uppercase; }
-.about-block h3 { font-size: clamp(18px, 1.6vw, 24px); font-weight: 700; margin-top: 10px; }
-.about-block p { max-width: 1100px; margin: 14px 0 20px; font-size: clamp(13px, 1vw, 15px); line-height: 1.5; text-align: justify; }
+.about-block--tinted .about-block__img { filter: none; }
+.about-block--tinted::before { display: none; }
+.about-block__content { width: 100%; max-width: 1220px; padding-inline: clamp(16px, 2.2vw, 32px); }
+.about-block h2 { font-size: clamp(24px, 2.5vw, 36px); font-weight: 700; line-height: 1.2; text-transform: uppercase; }
+.about-block h3 { margin-top: 8px; font-size: clamp(18px, 1.7vw, 24px); font-weight: 600; }
+.about-block p { max-width: 1160px; margin: 12px 0 20px; font-size: clamp(12px, .98vw, 14px); line-height: 1.45; text-align: justify; }
+.about-block__btn { min-height: 22px; padding: 3px 12px; font-size: 12px; font-weight: 500; color: var(--ink); }
 
 .history-pill { width: min(780px, 100%); height: clamp(150px, 16vw, 230px); margin: 0 auto; border-radius: 40px; object-fit: cover; filter: grayscale(.2) brightness(1.1); }
 .history-text { max-width: 820px; margin: 36px auto; text-align: center; font-size: clamp(13px, 1.1vw, 16px); line-height: 1.5; }
 .history-band { width: 100%; height: clamp(240px, 30vw, 430px); object-fit: cover; filter: grayscale(1); }
 
-.dna-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-inline: var(--gutter); }
+.dna-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(14px, 1.5vw, 22px); padding-inline: clamp(16px, 2.6vw, 38px); }
 .dna-card { /* kartu bisa dibalik: depan judul, belakang penjelasan */
-    position: relative; aspect-ratio: 1 / .9; padding: 0; border: 0; background: none;
+    position: relative; aspect-ratio: 1; width: 100%; max-width: min(670px, calc(100svh - 260px)); justify-self: center;
+    padding: 0; border: 0; background: none;
     perspective: 1600px; cursor: pointer; font: inherit; text-align: center;
 }
 .dna-card__inner {
@@ -585,8 +596,9 @@ body.is-locked { overflow: hidden; }
     border-radius: var(--radius); background: var(--slate); color: var(--white);
     backface-visibility: hidden; -webkit-backface-visibility: hidden;
 }
-.dna-card__front { font-size: clamp(36px, 4.6vw, 66px); font-weight: 700; line-height: 1; letter-spacing: -.03em; }
-.dna-card__front em { display: block; font-weight: 300; }
+.dna-card__front { font-size: clamp(36px, 6.2vw, 92px); font-weight: 700; line-height: .95; letter-spacing: -.06em; }
+.dna-card__front .is-medium { font-weight: 500; letter-spacing: -.04em; }
+.dna-card__front em { display: block; font-weight: 300; letter-spacing: -.03em; }
 .dna-card__back {
     transform: rotateY(180deg); gap: 14px; padding: clamp(20px, 4vw, 60px);
     overflow-y: auto; font-size: clamp(12px, 1vw, 15px); line-height: 1.4; text-align: left;
