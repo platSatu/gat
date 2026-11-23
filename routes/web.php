@@ -4,10 +4,14 @@ use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Frontend\GerejaController;
 use Illuminate\Support\Facades\Route;
 
 // Website publik (tahap tampilan: isi masih statis, nanti diambil dari admin)
 Route::view('/', 'frontend.home')->name('home');
+
+// Cari gereja & jadwal ibadah (bagian "Gereja Terdekat" di beranda). Data dari HMMinistry, lihat Frontend\GerejaController.
+Route::get('gereja/cari', [GerejaController::class, 'cari'])->middleware('throttle:60,1')->name('gereja.cari');
 
 // Ganti bahasa (tombol bendera di header): /bahasa/id atau /bahasa/en, lalu kembali ke halaman sebelumnya.
 Route::get('bahasa/{locale}', function (string $locale) {
