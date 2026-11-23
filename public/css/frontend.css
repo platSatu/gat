@@ -760,6 +760,50 @@ body.is-locked { overflow: hidden; }
 /* =========================================================================
    11. Pengajaran & artikel
    ========================================================================= */
+/* Pengajaran (Figma "Artikel"): label, cari, KOM Everyone, kategori geser, artikel terpopuler */
+.teach-page .container { max-width: 1224px; }
+.teach-page__label { margin: 0 0 14px; font-size: clamp(18px, 1.5vw, 22px); font-weight: 500; }
+.teach-page .search-pill { min-height: 50px; padding: 8px 28px; }
+.teach-kom { margin-top: 22px; padding: clamp(10px, 1.4vw, 18px); border-radius: 30px; background: var(--cream); }
+.teach-kom__banner { position: relative; isolation: isolate; display: grid; place-items: center; min-height: clamp(260px, 32vw, 458px); overflow: hidden; border-radius: 26px; background: #2b2b2b; }
+.teach-kom__banner > img { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; }
+.teach-kom__text { max-width: 780px; padding: 24px; color: var(--white); text-align: center; }
+.teach-kom__text h2 { font-size: clamp(32px, 4.2vw, 60px); font-weight: 600; text-shadow: 0 4px 4px rgba(0, 0, 0, .25); }
+.teach-kom__text p { margin: 12px 0 30px; font-size: clamp(14px, 1.4vw, 20px); line-height: 1.3; }
+.teach-kom__text .btn-pill { min-width: 139px; min-height: 26px; padding: 4px 20px; font-size: 14px; font-weight: 600; }
+
+.teach-section-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: clamp(26px, 3vw, 40px) 0 14px; }
+.teach-section-head h2 { font-size: clamp(18px, 1.5vw, 22px); font-weight: 500; }
+.teach-section-head h2 a { color: inherit; text-decoration: none; }
+.teach-more { min-width: min(304px, 45vw); min-height: 46px; font-size: clamp(15px, 1.5vw, 22px); font-weight: 600; }
+
+.teach-cats {
+    display: grid; grid-auto-flow: column; grid-auto-columns: clamp(240px, 27.5vw, 394px); gap: clamp(12px, 1.3vw, 18px);
+    overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+    margin-right: calc(50% - 50vw); padding-right: calc(50vw - 50%); /* baris kategori menerus sampai tepi kanan layar, seperti di Figma */
+}
+.teach-cats::-webkit-scrollbar { display: none; }
+.teach-cat { scroll-snap-align: start; display: flex; flex-direction: column; color: var(--ink); text-decoration: none; }
+.teach-cat__img { position: relative; display: grid; place-items: center; height: clamp(110px, 10vw, 140px); overflow: hidden; border-radius: 10px 10px 0 0; background: #222; }
+.teach-cat__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) brightness(.6); transition: transform .5s; }
+.teach-cat:hover .teach-cat__img img { transform: scale(1.05); }
+.teach-cat__img h3 { position: relative; padding: 0 12px; color: var(--white); font-size: clamp(20px, 2.1vw, 30px); font-weight: 600; text-align: center; }
+.teach-cat__body { flex: 1; display: grid; place-items: center; min-height: 99px; margin-top: -10px; padding: 18px 20px; border-radius: 10px; background: var(--cream); font-size: 14px; font-weight: 300; line-height: 1.25; text-align: center; }
+
+.teach-popular { position: relative; overflow: hidden; border-radius: 30px; background: var(--cream); }
+.teach-popular__dots { position: absolute; top: 18px; right: 22px; z-index: 1; }
+.teach-popular__dots button { width: 12px; height: 12px; background: rgba(120, 120, 120, .85); }
+.teach-popular__dots button.is-active { background: #111; }
+.teach-popular__slide { display: block; color: var(--ink); text-decoration: none; }
+.teach-popular__slide[hidden] { display: none; }
+.teach-popular__slide.is-active { animation: fade-in .4s ease; }
+.teach-popular__slide img { display: block; width: 100%; height: clamp(160px, 20vw, 290px); object-fit: cover; }
+.teach-popular__body { position: relative; margin-top: -24px; min-height: clamp(200px, 20vw, 285px); padding: clamp(22px, 2.6vw, 36px) clamp(22px, 3vw, 44px); border-radius: 30px; background: var(--cream); }
+.teach-popular__cat { display: inline-block; margin-bottom: 10px; padding: 3px 12px; border-radius: 999px; background: var(--slate); color: var(--white); font-size: 12px; font-weight: 600; }
+.teach-popular__body h3 { margin-bottom: 10px; font-size: clamp(18px, 1.8vw, 26px); font-weight: 700; line-height: 1.2; }
+.teach-popular__body p { max-width: 900px; font-size: clamp(13px, 1.1vw, 16px); line-height: 1.55; color: var(--text); }
+.teach-popular__meta { display: block; margin-top: 14px; font-size: 13px; color: var(--text); }
+
 .teach-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .teach-card { display: grid; justify-items: center; align-content: center; gap: 28px; min-height: clamp(320px, 33vw, 470px); padding: 40px clamp(20px, 3vw, 50px); text-align: center; }
 .teach-card h2 { font-size: clamp(26px, 2.6vw, 38px); font-weight: 800; }

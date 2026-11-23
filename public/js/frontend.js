@@ -332,6 +332,24 @@
         });
     });
 
+    /* Slider bertitik (Pengajaran, Artikel Terpopuler): [data-dot-slider] berisi [data-dot] & [data-dot-slide]. */
+    document.querySelectorAll('[data-dot-slider]').forEach(function (box) {
+        var dots = box.querySelectorAll('[data-dot]');
+        var slides = box.querySelectorAll('[data-dot-slide]');
+        if (slides.length < 2) return;
+        var index = 0, timer = null;
+        function go(i) {
+            index = (i + slides.length) % slides.length;
+            slides.forEach(function (s, n) { s.hidden = n !== index; s.classList.toggle('is-active', n === index); });
+            dots.forEach(function (d, n) { d.classList.toggle('is-active', n === index); });
+        }
+        function restart() { clearInterval(timer); timer = setInterval(function () { go(index + 1); }, 7000); }
+        dots.forEach(function (d, n) { d.addEventListener('click', function () { go(n); restart(); }); });
+        box.addEventListener('mouseenter', function () { clearInterval(timer); });
+        box.addEventListener('mouseleave', restart);
+        restart();
+    });
+
     /* Video latar: berhenti kalau pengguna memilih "kurangi gerakan". */
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         document.querySelectorAll('video[autoplay]').forEach(function (v) { v.pause(); });

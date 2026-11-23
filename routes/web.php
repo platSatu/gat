@@ -36,7 +36,7 @@ Route::prefix('kegiatan')->name('events')->group(function () {
     Route::view('penghapusan-foto', 'frontend.pages.kegiatan.penghapusan')->name('.photo-request');
 });
 
-Route::view('pengajaran', 'frontend.pages.pengajaran')->name('teaching');
+Route::get('pengajaran', [ArticleController::class, 'teaching'])->name('teaching');
 
 Route::prefix('artikel')->name('articles')->group(function () {
     Route::get('/', [ArticleController::class, 'index']);                // data dari database

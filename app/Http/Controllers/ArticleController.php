@@ -26,6 +26,15 @@ class ArticleController extends Controller
         ]);
     }
 
+    /** Halaman Pengajaran (Figma "Artikel"): cari, KOM Everyone, kategori, artikel terpopuler. */
+    public function teaching(): View
+    {
+        return view('frontend.pages.pengajaran', [
+            'kategori' => $this->kategoriDenganSampul(),
+            'terpopuler' => Article::terbit()->terpopuler()->with('category:id,name')->limit(4)->get(self::KOLOM_KARTU),
+        ]);
+    }
+
     /** Semua artikel (terbaru, atau ?urut=populer). */
     public function all(Request $request): View
     {
@@ -44,11 +53,15 @@ class ArticleController extends Controller
     /** Semua kategori (kartu), gambar = artikel terbaru di kategori itu. */
     public function categories(): View
     {
-        $kategori = Category::untukArtikel()->each(function (Category $c) {
+        return view('frontend.pages.artikel.kategori', ['kategori' => $this->kategoriDenganSampul()]);
+    }
+
+    /** Kategori yang punya artikel terbit + gambar sampul (artikel terbaru di kategori itu). */
+    private function kategoriDenganSampul()
+    {
+        return Category::untukArtikel()->each(function (Category $c) {
             $c->setRelation('sampul', $c->articles()->terbit()->whereNotNull('image')->terbaru()->first(['id', 'category_id', 'image']));
         });
-
-        return view('frontend.pages.artikel.kategori', ['kategori' => $kategori]);
     }
 
     /** Artikel dalam satu kategori. */
