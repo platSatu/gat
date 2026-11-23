@@ -29,8 +29,11 @@
         ];
     @endphp
 
+    {{-- Efek geser saat digulir (seperti nivisgear.com): tiap bagian menempel, bagian berikutnya naik menutupinya,
+         bagian sebelumnya mengecil & meredup. Diatur frontend.js "Tentang: bagian bertumpuk". --}}
+    <div class="about-stack" data-about-stack>
     @foreach ($blocks as $block)
-        <section class="about-block">
+        <section class="about-block" data-about-card>
             <img class="about-block__img" src="{{ asset($block['image']) }}" alt="" @if (! $loop->first) loading="lazy" @endif>
             <div class="container">
                 <h2>{{ $block['title'] }}</h2>
@@ -40,4 +43,5 @@
             </div>
         </section>
     @endforeach
+    </div>
 @endsection
