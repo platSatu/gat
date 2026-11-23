@@ -6,6 +6,13 @@ use Illuminate\Support\Facades\Route;
 // Website publik (tahap tampilan: isi masih statis, nanti diambil dari admin)
 Route::view('/', 'frontend.home')->name('home');
 
+// Ganti bahasa (tombol bendera di header): /bahasa/id atau /bahasa/en, lalu kembali ke halaman sebelumnya.
+Route::get('bahasa/{locale}', function (string $locale) {
+    session(['locale' => $locale]);
+
+    return redirect()->back(fallback: route('home'));
+})->whereIn('locale', \App\Http\Middleware\SetLocale::SUPPORTED)->name('locale');
+
 Route::prefix('tentang')->name('about')->group(function () {
     Route::view('/', 'frontend.pages.tentang.index');
     Route::view('sejarah', 'frontend.pages.tentang.sejarah')->name('.history');

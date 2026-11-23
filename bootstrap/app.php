@@ -14,6 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Sudah login lalu membuka /auth/login -> langsung ke dashboard admin.
         $middleware->redirectUsersTo(fn () => route('admin.dashboard'));
+
+        // Bahasa pilihan pengunjung (ID/EN), lihat app/Http/Middleware/SetLocale.php
+        $middleware->web(append: [\App\Http\Middleware\SetLocale::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
