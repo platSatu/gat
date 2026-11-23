@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,11 +33,14 @@ Route::prefix('kegiatan')->name('events')->group(function () {
 Route::view('pengajaran', 'frontend.pages.pengajaran')->name('teaching');
 
 Route::prefix('artikel')->name('articles')->group(function () {
-    Route::view('/', 'frontend.pages.artikel.index');
+    Route::get('/', [ArticleController::class, 'index']);                // data dari database
     Route::view('cari', 'frontend.pages.artikel.cari')->name('.search');
-    Route::view('kategori', 'frontend.pages.artikel.kategori')->name('.categories');
-    Route::view('kategori/gatsu-news', 'frontend.pages.artikel.daftar')->name('.category');
-    Route::view('contoh-artikel', 'frontend.pages.artikel.show')->name('.show');
+    Route::get('semua', [ArticleController::class, 'all'])->name('.all');                 // ?urut=populer
+    Route::get('kategori', [ArticleController::class, 'categories'])->name('.categories');
+    // /artikel/kategori/{id}: artikel dikelompokkan per kategori. Tanpa id = halaman semua kategori.
+    Route::get('kategori/{category?}', [ArticleController::class, 'category'])->whereNumber('category')->name('.category');
+    // Detail: /artikel/{slug}. Tanpa slug (link lama yang belum diganti) = artikel terbaru. Harus paling bawah.
+    Route::get('{article?}', [ArticleController::class, 'show'])->name('.show');
 });
 
 Route::view('komunitas', 'frontend.pages.komunitas')->name('community');

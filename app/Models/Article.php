@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 /**
  * Artikel dari database lama (portal_gatsu, tabel `articles`).
@@ -39,6 +40,36 @@ class Article extends Model
     public function getImageUrlAttribute(): ?string
     {
         return self::urlPublik($this->image);
+    }
+
+    /** Hanya artikel yang sudah terbit (status = 1; status 0 = draf). */
+    public function scopeTerbit(Builder $query): Builder
+    {
+        return $query->where('status', 1);
+    }
+
+    public function scopeTerpopuler(Builder $query): Builder
+    {
+        return $query->orderByDesc('read_count')->orderByDesc('id');
+    }
+
+    /** Ringkasan teks polos dari isi artikel (HTML), untuk kartu daftar. */
+    public function ringkasan(int $panjang = 160): string
+    {
+        $teks = html_entity_decode(strip_tags((string) $this->description), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        return Str::limit(trim(preg_replace('/\s+/u', ' ', $teks)), $panjang);
+    }
+
+    /** Isi artikel (HTML dari admin lama), dibersihkan dari <script>/<style>, atribut on*="..." dan link javascript:. */
+    public function getIsiAttribute(): string
+    {
+        $html = (string) $this->description;
+        $html = preg_replace('#<(script|style)\b[^>]*>.*?</\1>#is', '', $html);
+        $html = preg_replace('#\s+on[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)#i', '', $html);
+        $html = preg_replace('#(href|src)\s*=\s*(["\'])\s*javascript:[^"\']*\2#i', '$1="#"', $html);
+
+        return $html;
     }
 
     public function scopeTerbaru(Builder $query): Builder

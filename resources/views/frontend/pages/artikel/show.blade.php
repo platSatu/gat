@@ -1,35 +1,42 @@
 @extends('layouts.frontend')
 
-@section('title', __('Judul Artikel'))
+@section('title', $article->meta_title ?: $article->title)
+@section('meta_description', $article->meta_description ?: $article->ringkasan(155))
 
 @section('content')
-    {{-- Figma "Gatsu News" (detail): judul, gambar + isi, "Baca juga". --}}
+    {{-- Figma "Gatsu News" (detail): judul, gambar + isi, "Baca juga". Data dari ArticleController@show. --}}
     <section class="page page--slate">
         <div class="container">
-            <h1 class="page-title">{{ __('Judul Artikel') }}</h1>
+            <h1 class="page-title">{{ $article->title }}</h1>
+            <p class="article-meta">
+                @if ($article->category)
+                    <a href="{{ route('articles.category', $article->category) }}">{{ $article->category->name }}</a>
+                @endif
+                @if ($article->category && $article->date_post) · @endif
+                {{ $article->date_post?->translatedFormat('j F Y') }}
+            </p>
 
             <article class="article-body">
-                <div class="strip-card__img" style="background-image: url('{{ asset('images/pages/sejarah.jpg') }}')"></div>
-                <div class="strip-card__body">
-                    <h2>What is Lorem Ipsum?</h2>
-                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                    <h2>Where does it come from?</h2>
-                    <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.</p>
+                <div class="strip-card__img" style="background-image: url('{{ $article->image_url ?? asset('images/pages/sejarah.jpg') }}')"></div>
+                <div class="strip-card__body article-content">
+                    {!! $article->isi !!}
                 </div>
             </article>
 
             <div class="related">
-                <h2>{{ __('Baca juga:') }}</h2>
-                @foreach (['images/about/berakar.jpg', 'images/about/restorasi.jpg'] as $image)
-                    <a href="{{ route('articles.show') }}" class="related-card">
-                        <img src="{{ asset($image) }}" alt="" loading="lazy">
-                        <div>
-                            <h3>{{ __('Judul Artikel') }}</h3>
-                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
-                        </div>
-                    </a>
-                @endforeach
-                <a href="{{ route('articles.category') }}" class="btn-pill btn-blue btn-sm">{{ __('Lihat Lebih Banyak Artikel') }}</a>
+                @if ($bacaJuga->isNotEmpty())
+                    <h2>{{ __('Baca juga:') }}</h2>
+                    @foreach ($bacaJuga as $item)
+                        <a href="{{ route('articles.show', $item) }}" class="related-card">
+                            <img src="{{ $item->image_url ?? asset('images/about/berakar.jpg') }}" alt="" loading="lazy">
+                            <div>
+                                <h3>{{ $item->title }}</h3>
+                                <p>{{ $item->ringkasan(180) }}</p>
+                            </div>
+                        </a>
+                    @endforeach
+                @endif
+                <a href="{{ $article->category ? route('articles.category', $article->category) : route('articles.all') }}" class="btn-pill btn-blue btn-sm">{{ __('Lihat Lebih Banyak Artikel') }}</a>
             </div>
         </div>
     </section>
