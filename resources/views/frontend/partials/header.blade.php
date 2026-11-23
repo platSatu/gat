@@ -1,7 +1,6 @@
 {{--
     Header: logo kiri + (pilihan bahasa & tombol Menu) kanan.
-    Seluruh header tetap diam di atas saat digulung (position: fixed). Setelah digulung,
-    header diberi latar (class .is-scrolled dari frontend.js) supaya logo tetap terbaca.
+    Seluruh header tetap diam di atas saat digulung (position: fixed), tanpa latar.
     Halaman berlatar terang memakai logo gelap: @section('header_theme', 'dark').
 --}}
 @php
@@ -10,7 +9,7 @@
     $locale = app()->getLocale();
 @endphp
 
-<header @class(['site-header', 'site-header--dark' => $darkHeader]) data-site-header>
+<header class="site-header">
     <a href="{{ route('home') }}" class="site-logo" aria-label="{{ __('Beranda') }}">
         <img src="{{ asset($logo) }}?v={{ filemtime(public_path($logo)) }}" alt="{{ config('app.name') }}" width="230" height="40">
     </a>

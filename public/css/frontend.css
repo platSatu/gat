@@ -91,22 +91,13 @@ body.is-locked { overflow: hidden; }
 .dots button.is-active { background: var(--white); }
 
 /* 4. Header & Menu ----------------------------------------------------- */
-/* Header (logo, bahasa, menu) diam di atas saat digulung; ukuran & posisinya tidak berubah. Latar muncul setelah digulung (.is-scrolled, dari frontend.js):
-   slate untuk logo putih, putih untuk logo gelap (header_theme dark). */
+/* Header (logo, bahasa, menu) diam di atas saat digulung, tanpa latar; ukuran & posisinya tidak berubah. */
 .site-header {
     position: fixed; inset: 0 0 auto 0; z-index: 30;
     display: flex; align-items: center; justify-content: space-between;
-    padding: clamp(20px, 3vw, 40px) var(--gutter);
+    padding: clamp(10px, 1.2vw, 18px) var(--gutter);
     pointer-events: none;
-    transition: background-color .3s, box-shadow .3s;
 }
-.site-header.is-scrolled {
-    background: rgba(70, 104, 131, .92);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, .15);
-    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-    pointer-events: auto;
-}
-.site-header--dark.is-scrolled { background: rgba(255, 255, 255, .92); }
 .site-header > * { pointer-events: auto; }
 .site-logo img { width: clamp(150px, 16vw, 230px); height: auto; }
 
