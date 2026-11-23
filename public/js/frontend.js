@@ -278,6 +278,26 @@
         });
     });
 
+    /* Etalase pelayanan (halaman Pelayanan): gambar kecil / tombol "berikutnya" mengganti pelayanan yang tampil. */
+    document.querySelectorAll('[data-showcase]').forEach(function (box) {
+        var tabs = box.querySelectorAll('[data-showcase-tab]');
+        var slides = box.querySelectorAll('[data-showcase-slide]');
+        var current = 0;
+        function show(i) {
+            current = (i + slides.length) % slides.length;
+            slides.forEach(function (s, n) { s.hidden = n !== current; s.classList.toggle('is-active', n === current); });
+            tabs.forEach(function (t, n) { t.classList.toggle('is-active', n === current); t.setAttribute('aria-selected', n === current ? 'true' : 'false'); });
+        }
+        tabs.forEach(function (t, n) { t.addEventListener('click', function () { show(n); }); });
+        box.querySelectorAll('[data-showcase-next]').forEach(function (b) { b.addEventListener('click', function () { show(current + 1); }); });
+        box.addEventListener('keydown', function (e) {
+            if (e.target.closest('[data-showcase-tab]') && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+                show(current + (e.key === 'ArrowRight' ? 1 : -1));
+                tabs[current].focus();
+            }
+        });
+    });
+
     /* Video latar: berhenti kalau pengguna memilih "kurangi gerakan". */
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         document.querySelectorAll('video[autoplay]').forEach(function (v) { v.pause(); });
