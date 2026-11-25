@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\HighlightController as AdminHighlightController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Frontend\GerejaController;
@@ -76,6 +77,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // Admin memakai ID di URL (slug artikel lama bisa kosong/ganda); halaman publik tetap memakai slug.
     Route::resource('articles', AdminArticleController::class)->except('show')->scoped(['article' => 'id']);
     Route::resource('categories', AdminCategoryController::class)->except('show');
+    // Highlights: memakai ID di URL admin (slug publik dibuat dari judul).
+    Route::resource('highlights', AdminHighlightController::class)->except('show')->scoped(['highlight' => 'id']);
 });
 
 // Uji koneksi database lama + gambar (HANYA di local, APP_ENV=local). Boleh dihapus setelah selesai.

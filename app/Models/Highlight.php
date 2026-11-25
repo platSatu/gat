@@ -41,9 +41,14 @@ class Highlight extends Model
         return $this->slug;
     }
 
-    /** Cari highlight aktif dari slug di URL. Jumlah highlight sedikit, jadi dicocokkan langsung dari judul. */
+    /** Halaman publik: cari highlight aktif dari slug di URL. Jumlah highlight sedikit, jadi dicocokkan langsung dari judul. */
     public function resolveRouteBinding($value, $field = null): ?self
     {
+        // Admin memakai {highlight:id} -> cari langsung berdasarkan kolom itu (termasuk yang tidak aktif).
+        if ($field) {
+            return static::where($field, $value)->first();
+        }
+
         $cocok = static::tampil()->terbaru()->get(['id', 'title'])
             ->first(fn (self $h) => $h->slug === (string) $value);
 
