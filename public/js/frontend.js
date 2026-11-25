@@ -86,6 +86,14 @@
     });
 
     /* Deret kartu yang bisa digeser: tombol [data-scroll-prev]/[data-scroll-next] menggeser [data-scroll-track]. */
+    /* Header: beri latar setelah halaman digulung sedikit (lihat .site-header.is-scrolled di CSS). */
+    var siteHeader = document.querySelector('[data-site-header]');
+    if (siteHeader) {
+        var setHeader = function () { siteHeader.classList.toggle('is-scrolled', window.scrollY > 24); };
+        window.addEventListener('scroll', setHeader, { passive: true });
+        setHeader();
+    }
+
     /* Slider kartu (Highlights): geser 1 kartu per klik, berputar di ujung, jalan otomatis tiap 5 detik
        (berhenti saat kursor/jari di atas slider atau tab tidak terlihat). */
     document.querySelectorAll('[data-scroller]').forEach(function (wrap) {
