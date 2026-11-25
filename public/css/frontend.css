@@ -174,7 +174,7 @@ body.is-locked { overflow: hidden; }
 
 .site-menu__nav { padding: clamp(4.5rem, 9vh, 6rem) clamp(1.5rem, 9vw, 8.125rem); }
 .site-menu__nav ul { list-style: none; margin: 0; padding: 0; }
-.site-menu__nav li { overflow: hidden; } /* "jendela" tempat teks naik */
+.site-menu__nav li { overflow: hidden; padding-left: 1.5rem; margin-left: -1.5rem; } /* "jendela" tempat teks naik; padding kiri = tempat titik menu aktif */
 .site-menu__nav a {
     position: relative; display: inline-block;
     font-size: clamp(2rem, 3.4vw, 3.125rem); font-weight: 700; line-height: 1.38;
@@ -192,7 +192,7 @@ body.is-locked { overflow: hidden; }
     transform: scale(0); transition: transform .4s cubic-bezier(.33, 1, .68, 1);
 }
 .site-menu.is-open .site-menu__nav a.is-active::before { transform: scale(1); transition-delay: 1s; }
-.site-menu__nav li:has(a.is-active) { overflow: visible; }
+/* Catatan: jangan buat li aktif overflow: visible -> teksnya terlihat melayang sebelum waktunya (menu tampak "acak"). */
 
 .site-menu__side {
     display: flex; flex-direction: column; justify-content: space-between;

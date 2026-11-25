@@ -36,11 +36,13 @@
         document.body.classList.toggle('is-locked', open);
         openers.forEach(function (b) { b.setAttribute('aria-expanded', open ? 'true' : 'false'); });
         if (open) {
+            // Fokus ke tombol Close (bukan link menu pertama): kalau link yang difokus, browser menggulungnya
+            // ke dalam "jendela" li sehingga link itu langsung muncul tanpa animasi naik.
             lastFocus = document.activeElement;
-            var first = menu.querySelector('a, button');
-            if (first) first.focus();
+            var first = menu.querySelector('[data-menu-close]') || menu.querySelector('a, button');
+            if (first) first.focus({ preventScroll: true });
         } else if (lastFocus) {
-            lastFocus.focus();
+            lastFocus.focus({ preventScroll: true });
         }
     }
     openers.forEach(function (b) { b.addEventListener('click', function () { setMenu(true); }); });
