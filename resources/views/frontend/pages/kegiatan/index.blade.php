@@ -8,15 +8,22 @@
         Figma "Desktop - 3": Kegiatan Mendatang (besar) + Kegiatan Sebelumnya & Gatsu News.
         - Kegiatan Sebelumnya = highlight terbaru (tabel `highlights`), dari HighlightController@events.
         - Gatsu News = artikel terbaru (kategori "Gatsu News" kalau ada); tombol putar -> artikel itu, tombol -> halaman Artikel.
-        - Kegiatan Mendatang masih statis (belum ada tabel kegiatan mendatang di database).
+        - Kegiatan Mendatang: kalau tidak ada data, tampil kotak "Nantikan kegiatan berikutnya!".
     --}}
     @php
-        $mendatang = [
+        // Kegiatan Mendatang: belum ada sumber data di database, jadi $mendatang dari controller masih null
+        // dan yang tampil adalah kotak "Tidak ada acara" (Figma node 1205-402).
+        // Gambarnya: public/images/pages/kegiatan-kosong.jpg (ekspor dari Figma); selama belum ada, pakai latar pola titik.
+        $mendatang ??= null;
+        $kosong = [
             'tag' => __('Kegiatan Mendatang'),
-            'title' => 'Planetshakers Live in Indonesia 2027',
-            'date' => 'Friday, July 2, 2027',
-            'button' => __('Daftar Sekarang'),
-            'image' => 'images/pages/kegiatan-3.jpg',
+            'title' => __('Nantikan kegiatan berikutnya!'),
+            'text' => __('Saat ini belum ada kegiatan mendatang yang diumumkan, sambil menunggu, lihat kembali'),
+            'button' => __('Lihat Selengkapnya'),
+            'url' => $highlight ? route('highlights.show', $highlight) : route('home'),
+            'image' => file_exists(public_path('images/pages/kegiatan-kosong.jpg')) ? 'images/pages/kegiatan-kosong.jpg' : null,
+            'play' => false,
+            'class' => 'event-tile--empty',
         ];
 
         $sebelumnya = $highlight ? [
@@ -43,7 +50,7 @@
         <div class="container">
             <h1 class="sr-only">{{ __('Kegiatan') }}</h1>
             <div class="events-grid">
-                @include('frontend.pages.kegiatan._tile', ['event' => $mendatang])
+                @include('frontend.pages.kegiatan._tile', ['event' => $mendatang ?? $kosong])
                 <div class="events-grid__side">
                     @if ($sebelumnya)
                         @include('frontend.pages.kegiatan._tile', ['event' => $sebelumnya])

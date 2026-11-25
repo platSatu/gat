@@ -752,6 +752,12 @@ body.is-locked { overflow: hidden; }
 .event-tile__body small { display: block; font-size: 12px; margin: 2px 0 12px; }
 .event-tile__body .btn-pill { min-width: min(260px, 100%); }
 .event-tile .tag-pill, .event-tile .play-btn { z-index: 1; }
+.event-tile__text { max-width: 440px; margin: 0 0 12px; font-size: clamp(12px, 1.1vw, 15px); line-height: 1.4; }
+/* Kegiatan Mendatang kosong (Figma "TIDAK ADA ACARA"): gambar di public/images/pages/kegiatan-kosong.jpg, cadangannya pola titik. */
+.event-tile--empty { background: #e4e4e4 radial-gradient(rgba(0, 0, 0, .28) 1px, transparent 1.3px) 0 0 / 6px 6px; color: var(--ink); }
+.event-tile--empty::after { background: linear-gradient(transparent 62%, rgba(205, 205, 205, .95)); }
+.event-tile--empty .event-tile__body h2 { color: var(--white); font-size: clamp(22px, 2.6vw, 40px); line-height: 1.15; text-shadow: 0 2px 10px rgba(0, 0, 0, .45); }
+.event-tile--empty .event-tile__text { color: var(--ink); }
 
 .gallery-grid { position: relative; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
 .gallery-grid a { aspect-ratio: 1 / .92; border-radius: 14px; overflow: hidden; }
