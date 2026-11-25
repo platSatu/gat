@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Article;
 use App\Models\Highlight;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -16,6 +17,22 @@ class HighlightController extends Controller
     {
         return view('frontend.home', [
             'highlights' => Highlight::tampil()->terbaru()->get(self::KOLOM_KARTU),
+        ]);
+    }
+
+    /**
+     * Halaman Kegiatan: highlight terbaru (Kegiatan Sebelumnya) + artikel terbaru untuk kotak Gatsu News.
+     * Kategori "Gatsu News" dipakai kalau ada; kalau belum ada, pakai artikel terbit terbaru yang bergambar.
+     */
+    public function events(): View
+    {
+        $artikel = fn () => Article::terbit()->whereNotNull('image')->where('image', '!=', '')->terbaru();
+        $kolom = ['id', 'category_id', 'slug', 'title', 'image', 'date_post'];
+
+        return view('frontend.pages.kegiatan.index', [
+            'highlight' => Highlight::tampil()->terbaru()->first(self::KOLOM_KARTU),
+            'gatsuNews' => $artikel()->whereHas('category', fn ($q) => $q->where('name', 'Gatsu News'))->first($kolom)
+                ?? $artikel()->first($kolom),
         ]);
     }
 

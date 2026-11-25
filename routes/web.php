@@ -36,7 +36,7 @@ Route::view('pelayanan', 'frontend.pages.pelayanan.index')->name('ministry');
 Route::view('pelayanan/graha-bina-asuh', 'frontend.pages.pelayanan.show')->name('ministry.show');
 
 Route::prefix('kegiatan')->name('events')->group(function () {
-    Route::view('/', 'frontend.pages.kegiatan.index');
+    Route::get('/', [HighlightController::class, 'events']);   // highlight terbaru + Gatsu News dari database
     Route::view('galeri', 'frontend.pages.kegiatan.galeri')->name('.gallery');
     Route::view('galeri/foto', 'frontend.pages.kegiatan.foto')->name('.photo');
     Route::view('penghapusan-foto', 'frontend.pages.kegiatan.penghapusan')->name('.photo-request');
