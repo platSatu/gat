@@ -86,15 +86,47 @@
     });
 
     /* Deret kartu yang bisa digeser: tombol [data-scroll-prev]/[data-scroll-next] menggeser [data-scroll-track]. */
+    /* Slider kartu (Highlights): geser 1 kartu per klik, berputar di ujung, jalan otomatis tiap 5 detik
+       (berhenti saat kursor/jari di atas slider atau tab tidak terlihat). */
     document.querySelectorAll('[data-scroller]').forEach(function (wrap) {
         var track = wrap.querySelector('[data-scroll-track]');
+        if (!track) return;
+        var prev = wrap.querySelector('[data-scroll-prev]');
+        var next = wrap.querySelector('[data-scroll-next]');
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
         function step(dir) {
             var card = track.firstElementChild;
             var amount = card ? card.getBoundingClientRect().width + 24 : track.clientWidth;
-            track.scrollBy({ left: dir * amount, behavior: 'smooth' });
+            var max = track.scrollWidth - track.clientWidth;
+            if (max <= 2) return;
+            if (dir > 0 && track.scrollLeft >= max - 2) {
+                track.scrollTo({ left: 0, behavior: reduce ? 'auto' : 'smooth' });
+            } else if (dir < 0 && track.scrollLeft <= 2) {
+                track.scrollTo({ left: max, behavior: reduce ? 'auto' : 'smooth' });
+            } else {
+                track.scrollBy({ left: dir * amount, behavior: reduce ? 'auto' : 'smooth' });
+            }
         }
-        wrap.querySelector('[data-scroll-prev]').addEventListener('click', function () { step(-1); });
-        wrap.querySelector('[data-scroll-next]').addEventListener('click', function () { step(1); });
+
+        var timer = 0;
+        function stop() { clearInterval(timer); timer = 0; }
+        function start() {
+            stop();
+            if (!reduce && track.scrollWidth - track.clientWidth > 2) timer = setInterval(function () { step(1); }, 5000);
+        }
+
+        if (prev) prev.addEventListener('click', function () { step(-1); start(); });
+        if (next) next.addEventListener('click', function () { step(1); start(); });
+        wrap.addEventListener('mouseenter', stop);
+        wrap.addEventListener('mouseleave', start);
+        wrap.addEventListener('touchstart', stop, { passive: true });
+        wrap.addEventListener('touchend', start, { passive: true });
+        wrap.addEventListener('focusin', stop);
+        wrap.addEventListener('focusout', start);
+        document.addEventListener('visibilitychange', function () { document.hidden ? stop() : start(); });
+        window.addEventListener('resize', start);
+        start();
     });
 
     /* Kartu yang bisa dibalik (DNA Kami) */

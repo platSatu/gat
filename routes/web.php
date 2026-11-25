@@ -5,10 +5,14 @@ use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Frontend\GerejaController;
+use App\Http\Controllers\Frontend\HighlightController;
 use Illuminate\Support\Facades\Route;
 
-// Website publik (tahap tampilan: isi masih statis, nanti diambil dari admin)
-Route::view('/', 'frontend.home')->name('home');
+// Website publik. Beranda: slider highlights diambil dari tabel `highlights`.
+Route::get('/', [HighlightController::class, 'home'])->name('home');
+
+// Detail highlight: /media/{id}, sama dengan URL website lama (mis. /media/16).
+Route::get('media/{highlight}', [HighlightController::class, 'show'])->whereNumber('highlight')->name('highlights.show');
 
 // Cari gereja & jadwal ibadah (bagian "Gereja Terdekat" di beranda). Data dari HMMinistry, lihat Frontend\GerejaController.
 Route::get('gereja/cari', [GerejaController::class, 'cari'])->middleware('throttle:60,1')->name('gereja.cari');

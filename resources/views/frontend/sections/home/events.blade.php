@@ -1,21 +1,16 @@
-{{-- Kegiatan (slider kartu). Isi sementara di $events; nanti diambil dari admin. --}}
-@php
-    $events = [
-        ['title' => 'Planetshakers 2026', 'image' => 'images/home/event-1.jpg', 'url' => route('events')],
-        ['title' => 'Planetshakers 2025', 'image' => 'images/home/event-2.jpg', 'url' => route('events')],
-        ['title' => 'Everyone Asia 2024', 'image' => 'images/home/event-3.jpg', 'url' => route('events')],
-    ];
-@endphp
+{{-- Highlights (slider kartu). Data dari tabel `highlights` (status 1, terbaru dulu), dikirim oleh Frontend\HighlightController@home. --}}
+@php $highlights = $highlights ?? collect(); @endphp
 
-<section class="home-events" data-scroller aria-label="{{ __('Kegiatan') }}">
+@if ($highlights->isNotEmpty())
+<section class="home-events" data-scroller aria-label="{{ __('Highlights') }}">
     {{-- Judul ini hanya tampil di HP (sesuai frame mobile Figma). --}}
     <h2 class="home-events__title">{{ __('APA YANG TERJADI DI GATSU?') }}</h2>
 
     <div class="home-events__track" data-scroll-track>
-        @foreach ($events as $event)
-            <a href="{{ $event['url'] }}" class="event-card">
-                <img src="{{ asset($event['image']) }}" alt="" loading="lazy">
-                <h3>{{ $event['title'] }}</h3>
+        @foreach ($highlights as $highlight)
+            <a href="{{ route('highlights.show', $highlight) }}" class="event-card">
+                <img src="{{ $highlight->image_url ?? asset('images/home/event-1.jpg') }}" alt="{{ $highlight->title }}" loading="lazy">
+                <h3>{{ $highlight->title }}</h3>
             </a>
         @endforeach
     </div>
@@ -30,3 +25,4 @@
         </button>
     </div>
 </section>
+@endif

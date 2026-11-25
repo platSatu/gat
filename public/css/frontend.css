@@ -453,6 +453,18 @@ body.is-locked { overflow: hidden; }
 .home-events__nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 28px; }
 .home-events__nav .round-btn { border: 0; width: 32px; height: 32px; }
 
+/* Detail highlight (/media/{id}) */
+.highlight-video { display: block; width: 100%; max-height: 70vh; border-radius: var(--radius); background: #000; object-fit: contain; }
+.highlight-video + .highlight-body { margin-top: 20px; border-radius: var(--radius); }
+.highlight-body { background: var(--cream); color: var(--ink); }
+.highlight-photos { max-width: 900px; margin: 34px auto 0; }
+.highlight-photos h2 { font-size: 18px; margin-bottom: 14px; }
+.highlight-photos .gallery-grid { grid-template-columns: repeat(4, 1fr); }
+.highlight-more__title { display: block; }
+@media (max-width: 767px) {
+    .highlight-photos .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 /* 6e. Pelayanan dan mitra */
 .home-partners { padding: clamp(40px, 5vw, 64px) 0 clamp(48px, 6vw, 80px); text-align: center; }
 .home-partners h2 { font-size: clamp(18px, 2vw, 28px); font-weight: 800; margin-bottom: clamp(28px, 4vw, 56px); }
