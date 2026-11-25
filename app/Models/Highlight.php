@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 /**
- * Highlights (tabel `highlights` di database lama): slider "Kegiatan" di beranda + halaman /media/{id}.
+ * Highlights (tabel `highlights` di database lama): slider "Kegiatan" di beranda + halaman /highlights/{slug}.
+ * Tabel tidak punya kolom slug, jadi slug dibuat dari judul (mis. "Everyone Asia 2024" -> everyone-asia-2024).
  * Kolom gambar/video berupa path relatif dari folder public website lama, mis. "uploads/ps1.jpg".
  * image1..image8 = foto dokumentasi, bghighlights = gambar latar/banner, video = video rekap.
  */
@@ -26,6 +28,27 @@ class Highlight extends Model
     ];
 
     public const KOLOM_FOTO = ['image1', 'image2', 'image3', 'image4', 'image5', 'image6', 'image7', 'image8'];
+
+    /** Slug dari judul; kalau judul kosong/tidak bisa dijadikan slug, pakai ID. */
+    public function getSlugAttribute(): string
+    {
+        return Str::slug((string) $this->title) ?: (string) $this->getKey();
+    }
+
+    /** route('highlights.show', $highlight) menghasilkan /highlights/{slug}. */
+    public function getRouteKey(): mixed
+    {
+        return $this->slug;
+    }
+
+    /** Cari highlight aktif dari slug di URL. Jumlah highlight sedikit, jadi dicocokkan langsung dari judul. */
+    public function resolveRouteBinding($value, $field = null): ?self
+    {
+        $cocok = static::tampil()->terbaru()->get(['id', 'title'])
+            ->first(fn (self $h) => $h->slug === (string) $value);
+
+        return $cocok ? static::find($cocok->getKey()) : null;
+    }
 
     /** Hanya yang aktif (status = 1). */
     public function scopeTampil(Builder $query): Builder

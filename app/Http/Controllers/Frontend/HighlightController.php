@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Highlight;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
-/** Beranda (slider highlights) & detail highlight di /media/{id} (sama dengan URL website lama). */
+/** Beranda (slider highlights) & detail highlight di /highlights/{slug}. Link lama /media/{id} dialihkan. */
 class HighlightController extends Controller
 {
     private const KOLOM_KARTU = ['id', 'title', 'image1', 'bghighlights', 'date_post'];
@@ -29,5 +30,13 @@ class HighlightController extends Controller
             ->get(self::KOLOM_KARTU);
 
         return view('frontend.pages.highlight.show', compact('highlight', 'lainnya'));
+    }
+
+    /** /media/{id} dari website lama -> 301 ke /highlights/{slug}. */
+    public function legacy(int $id): RedirectResponse
+    {
+        $highlight = Highlight::tampil()->findOrFail($id, ['id', 'title']);
+
+        return redirect()->route('highlights.show', $highlight, 301);
     }
 }

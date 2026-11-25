@@ -11,8 +11,10 @@ use Illuminate\Support\Facades\Route;
 // Website publik. Beranda: slider highlights diambil dari tabel `highlights`.
 Route::get('/', [HighlightController::class, 'home'])->name('home');
 
-// Detail highlight: /media/{id}, sama dengan URL website lama (mis. /media/16).
-Route::get('media/{highlight}', [HighlightController::class, 'show'])->whereNumber('highlight')->name('highlights.show');
+// Detail highlight: /highlights/{slug-judul}, mis. /highlights/everyone-asia-2024.
+Route::get('highlights/{highlight}', [HighlightController::class, 'show'])->name('highlights.show');
+// Link lama /media/{id} (website lama) dialihkan permanen ke /highlights/{slug}.
+Route::get('media/{id}', [HighlightController::class, 'legacy'])->whereNumber('id')->name('highlights.legacy');
 
 // Cari gereja & jadwal ibadah (bagian "Gereja Terdekat" di beranda). Data dari HMMinistry, lihat Frontend\GerejaController.
 Route::get('gereja/cari', [GerejaController::class, 'cari'])->middleware('throttle:60,1')->name('gereja.cari');
