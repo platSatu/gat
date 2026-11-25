@@ -3,10 +3,18 @@
 @section('title', __('Tentang Gatsu'))
 
 @section('content')
-    {{-- Figma "Desktop - 2" (revisi): 4 bagian foto lebar (16:9) bernuansa biru, teks rata kiri di bawah.
-         Isi sementara di $blocks; nanti dari admin. 'tinted' = gambar sudah bernuansa biru dari Figma (tidak diwarnai lagi). --}}
+    {{--
+        Figma "Desktop - 2" (revisi): bagian foto lebar (16:9) bernuansa biru, teks rata kiri di bawah.
+        Isi dari tabel `about_sections` (admin: Tentang Kami), dikirim AboutController@index sebagai $sections.
+        Kalau tabel belum dibuat ($sections null), dipakai isi lama di bawah ini.
+        'tinted' = gambar sudah bernuansa biru (tidak diwarnai lagi oleh website).
+    --}}
     @php
-        $blocks = [
+        $blocks = $sections?->map(fn ($s) => [
+            'title' => $s->tr('name'), 'subtitle' => $s->tr('subtitle'), 'text' => $s->tr('excerpt'),
+            'image_url' => $s->background_url, 'tinted' => ! $s->tint,
+            'button' => $s->tombol(), 'url' => $s->url,
+        ])->all() ?? [
             [
                 'title' => __('Mengenal GBI Gatsu'), 'subtitle' => __('Berawal dari sebuah panggilan'), 'image' => 'images/about/mengenal-figma.jpg', 'tinted' => true,
                 'text' => __('GBI Jl. Jend. Gatot Subroto, atau yang lebih dikenal sebagai GBI Gatsu, adalah gereja lokal di bawah naungan Sinode Gereja Bethel Indonesia. Berdiri sejak 4 September 1988 di Jakarta, GBI Gatsu terus bertumbuh menjadi sebuah keluarga besar gereja apostolik yang terdiri dari rayon, cabang khusus, dan gereja-gereja cabang di bawah pembinaannya.'),
@@ -28,7 +36,7 @@
                 'button' => __('Kenali Dasar Iman Kami'), 'url' => route('about.dna'),
             ],
         ];
-        // Pakai gambar dari Figma (sudah bernuansa biru) kalau filenya sudah ada di public/images/about.
+        // Isi lama: pakai gambar dari Figma (sudah bernuansa biru) kalau filenya sudah ada di public/images/about.
         foreach ($blocks as &$item) {
             if (isset($item['figma']) && file_exists(public_path($item['figma']))) {
                 $item['image'] = $item['figma'];
@@ -40,11 +48,13 @@
 
     @foreach ($blocks as $block)
         <section @class(['about-block', 'about-block--tinted' => $block['tinted'] ?? false])>
-            <img class="about-block__img" src="{{ asset($block['image']) }}" alt="" @if (! $loop->first) loading="lazy" @endif>
+            @if ($gambar = $block['image_url'] ?? (isset($block['image']) ? asset($block['image']) : null))
+                <img class="about-block__img" src="{{ $gambar }}" alt="" @if (! $loop->first) loading="lazy" @endif>
+            @endif
             <div class="about-block__content">
                 <h2>{{ $block['title'] }}</h2>
-                @isset($block['subtitle'])<h3>{{ $block['subtitle'] }}</h3>@endisset
-                <p>{{ $block['text'] }}</p>
+                @if (filled($block['subtitle'] ?? null))<h3>{{ $block['subtitle'] }}</h3>@endif
+                @if (filled($block['text'] ?? null))<p>{{ $block['text'] }}</p>@endif
                 <a href="{{ $block['url'] }}" class="btn-pill about-block__btn">{{ $block['button'] }}</a>
             </div>
         </section>

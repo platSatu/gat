@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
+use App\Http\Controllers\Admin\AboutSectionController as AdminAboutSectionController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\HighlightController as AdminHighlightController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Frontend\AboutController;
 use App\Http\Controllers\Frontend\GerejaController;
 use App\Http\Controllers\Frontend\HighlightController;
 use Illuminate\Support\Facades\Route;
@@ -28,9 +30,10 @@ Route::get('bahasa/{locale}', function (string $locale) {
 })->whereIn('locale', \App\Http\Middleware\SetLocale::SUPPORTED)->name('locale');
 
 Route::prefix('tentang')->name('about')->group(function () {
-    Route::view('/', 'frontend.pages.tentang.index');
+    Route::get('/', [AboutController::class, 'index']);   // blok dari tabel about_sections (admin: Tentang Kami)
     Route::view('sejarah', 'frontend.pages.tentang.sejarah')->name('.history');
     Route::view('dna-kami', 'frontend.pages.tentang.dna')->name('.dna');
+    Route::get('{slug}', [AboutController::class, 'show'])->where('slug', '[a-z0-9-]+')->name('.show');
 });
 
 Route::view('pelayanan', 'frontend.pages.pelayanan.index')->name('ministry');
@@ -79,6 +82,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::resource('categories', AdminCategoryController::class)->except('show');
     // Highlights: memakai ID di URL admin (slug publik dibuat dari judul).
     Route::resource('highlights', AdminHighlightController::class)->except('show')->scoped(['highlight' => 'id']);
+    // Tentang Kami: blok halaman /tentang (ID di URL admin), plus tombol naik/turun urutan.
+    Route::resource('about', AdminAboutSectionController::class)->except('show')->scoped(['about' => 'id']);
+    Route::post('about/{about:id}/move/{arah}', [AdminAboutSectionController::class, 'move'])->whereIn('arah', ['up', 'down'])->name('about.move');
 });
 
 // Uji koneksi database lama + gambar (HANYA di local, APP_ENV=local). Boleh dihapus setelah selesai.

@@ -10,6 +10,7 @@
         ['label' => 'Article', 'icon' => 'mdi-file-document', 'route' => 'admin.articles.index', 'active' => 'admin.articles.*'],
         ['label' => 'Category Article', 'icon' => 'mdi-tag-multiple', 'route' => 'admin.categories.index', 'active' => 'admin.categories.*'],
         ['label' => 'Highlights', 'icon' => 'mdi-star-circle', 'route' => 'admin.highlights.index', 'active' => 'admin.highlights.*'],
+        ['label' => 'Tentang Kami', 'icon' => 'mdi-information-outline', 'route' => 'admin.about.index', 'active' => 'admin.about.*'],
     ];
 @endphp
 
