@@ -23,13 +23,7 @@ class HighlightController extends Controller
     {
         abort_unless((int) $highlight->status === 1, 404);
 
-        $lainnya = Highlight::tampil()
-            ->whereKeyNot($highlight->getKey())
-            ->terbaru()
-            ->limit(6)
-            ->get(self::KOLOM_KARTU);
-
-        return view('frontend.pages.highlight.show', compact('highlight', 'lainnya'));
+        return view('frontend.pages.highlight.show', compact('highlight'));
     }
 
     /** /media/{id} dari website lama -> 301 ke /highlights/{slug}. */
