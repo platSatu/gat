@@ -1,13 +1,13 @@
 @extends('layouts.frontend')
 
-@section('title', $highlight->title)
-@section('meta_description', \Illuminate\Support\Str::limit(trim(strip_tags(html_entity_decode((string) $highlight->description))), 155))
+@section('title', $highlight->tr('title'))
+@section('meta_description', $highlight->ringkasan(155))
 
 @section('content')
     {{-- Detail highlight (/media/{id}): judul, video, isi, foto dokumentasi, Data dari HighlightController@show. --}}
     <section class="page page--slate">
         <div class="container">
-            <h1 class="page-title">{{ $highlight->title }}</h1>
+            <h1 class="page-title">{{ $highlight->tr('title') }}</h1>
             @if ($highlight->date_post)
                 <p class="article-meta">{{ $highlight->date_post->translatedFormat('j F Y') }}</p>
             @endif
@@ -18,10 +18,10 @@
                         <source src="{{ $highlight->video_url }}" type="video/mp4">
                     </video>
                 @elseif ($highlight->banner_url)
-                    <img class="highlight-video" src="{{ $highlight->banner_url }}" alt="{{ $highlight->title }}">
+                    <img class="highlight-video" src="{{ $highlight->banner_url }}" alt="{{ $highlight->tr('title') }}">
                 @endif
 
-                @if (filled(strip_tags((string) $highlight->description)))
+                @if (filled(strip_tags($highlight->isi)))
                     <div class="strip-card__body article-content highlight-body">
                         {!! $highlight->isi !!}
                     </div>
@@ -33,7 +33,7 @@
                     <h2>{{ __('Dokumentasi') }}</h2>
                     <div class="gallery-grid">
                         @foreach ($highlight->foto as $foto)
-                            <a href="{{ $foto }}" target="_blank" rel="noopener"><img src="{{ $foto }}" alt="{{ $highlight->title }}" loading="lazy"></a>
+                            <a href="{{ $foto }}" target="_blank" rel="noopener"><img src="{{ $foto }}" alt="{{ $highlight->tr('title') }}" loading="lazy"></a>
                         @endforeach
                     </div>
                 </div>

@@ -1,13 +1,13 @@
 @extends('layouts.frontend')
 
-@section('title', $article->meta_title ?: $article->title)
-@section('meta_description', $article->meta_description ?: $article->ringkasan(155))
+@section('title', $article->metaJudul())
+@section('meta_description', $article->metaDeskripsi())
 
 @section('content')
     {{-- Figma "Gatsu News" (detail): judul, gambar + isi, "Baca juga". Data dari ArticleController@show. --}}
     <section class="page page--slate">
         <div class="container">
-            <h1 class="page-title">{{ $article->title }}</h1>
+            <h1 class="page-title">{{ $article->tr('title') }}</h1>
             <p class="article-meta">
                 @if ($article->category)
                     <a href="{{ route('articles.category', $article->category) }}">{{ $article->category->name }}</a>
@@ -17,7 +17,7 @@
             </p>
 
             <article class="article-body">
-                <img class="strip-card__photo" src="{{ $article->image_url ?? asset('images/pages/sejarah.jpg') }}" alt="{{ $article->title }}">
+                <img class="strip-card__photo" src="{{ $article->image_url ?? asset('images/pages/sejarah.jpg') }}" alt="{{ $article->tr('title') }}">
                 <div class="strip-card__body article-content">
                     {!! $article->isi !!}
                 </div>
@@ -30,7 +30,7 @@
                         <a href="{{ route('articles.show', $item) }}" class="related-card">
                             <img src="{{ $item->image_url ?? asset('images/about/berakar.jpg') }}" alt="" loading="lazy">
                             <div>
-                                <h3>{{ $item->title }}</h3>
+                                <h3>{{ $item->tr('title') }}</h3>
                                 <p>{{ $item->ringkasan(180) }}</p>
                             </div>
                         </a>

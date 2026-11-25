@@ -16,7 +16,7 @@ class HighlightController extends Controller
     public function home(): View
     {
         return view('frontend.home', [
-            'highlights' => Highlight::tampil()->terbaru()->get(self::KOLOM_KARTU),
+            'highlights' => Highlight::tampil()->denganTerjemahan()->terbaru()->get(self::KOLOM_KARTU),
         ]);
     }
 
@@ -26,11 +26,11 @@ class HighlightController extends Controller
      */
     public function events(): View
     {
-        $artikel = fn () => Article::terbit()->whereNotNull('image')->where('image', '!=', '')->terbaru();
+        $artikel = fn () => Article::terbit()->denganTerjemahan()->whereNotNull('image')->where('image', '!=', '')->terbaru();
         $kolom = ['id', 'category_id', 'slug', 'title', 'image', 'date_post'];
 
         return view('frontend.pages.kegiatan.index', [
-            'highlight' => Highlight::tampil()->terbaru()->first(self::KOLOM_KARTU),
+            'highlight' => Highlight::tampil()->denganTerjemahan()->terbaru()->first(self::KOLOM_KARTU),
             'gatsuNews' => $artikel()->whereHas('category', fn ($q) => $q->where('name', 'Gatsu News'))->first($kolom)
                 ?? $artikel()->first($kolom),
         ]);
@@ -39,6 +39,9 @@ class HighlightController extends Controller
     public function show(Highlight $highlight): View
     {
         abort_unless((int) $highlight->status === 1, 404);
+        if (! Highlight::bahasaUtama() && Highlight::terjemahanSiap()) {
+            $highlight->load('terjemahanAktif');
+        }
 
         return view('frontend.pages.highlight.show', compact('highlight'));
     }

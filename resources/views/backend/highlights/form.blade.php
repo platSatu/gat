@@ -14,7 +14,7 @@
 
 @section('content')
     {{--
-        Form highlight: Title, Description (TinyMCE), Video, Foto 1-8, Background, Date Post, Status.
+        Form highlight: Title & Description (tab Indonesia | English), Video, Foto 1-8, Background, Date Post, Status.
         Foto 1 = gambar kartu di slider beranda & "Kegiatan Sebelumnya". Background = poster video / cadangan gambar.
     --}}
     <div class="card">
@@ -26,18 +26,7 @@
                 @csrf
                 @unless ($baru) @method('PUT') @endunless
 
-                <div class="form-group">
-                    <label for="title">Title</label>
-                    <input id="title" type="text" name="title" value="{{ old('title', $highlight->title) }}" required maxlength="255"
-                        @class(['form-control', 'is-invalid' => $errors->has('title')])>
-                    @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                    <small class="form-text text-muted">Judul juga menjadi alamat halaman, mis. "Everyone Asia 2024" → /highlights/everyone-asia-2024.</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea id="description" name="description" rows="14" class="form-control">{{ old('description', $highlight->description) }}</textarea>
-                </div>
+                @include('backend.partials.lang-tabs', ['model' => $highlight, 'titleHelp' => 'Judul Indonesia juga menjadi alamat halaman, mis. "Everyone Asia 2024" → /highlights/everyone-asia-2024.'])
 
                 <div class="row">
                     <div class="col-md-6 form-group">
@@ -123,7 +112,7 @@
     <script src="{{ asset('be/assets/plugins/tinymce/tinymce.min.js') }}"></script>
     <script>
         tinymce.init({
-            selector: '#description',
+            selector: '#description, #description_en',
             height: 360,
             menubar: 'file edit insert view format table tools',
             plugins: 'advlist autolink link image lists charmap print preview hr anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking table contextmenu directionality emoticons paste textcolor',

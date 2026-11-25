@@ -8,7 +8,10 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-/** Halaman Artikel publik, data dari tabel `articles` & `categories` (database lama). Hanya artikel terbit (status 1). */
+/**
+ * Halaman Artikel publik, data dari tabel `articles` & `categories` (database lama). Hanya artikel terbit (status 1).
+ * denganTerjemahan(): judul/isi Inggris ikut dimuat kalau pengunjung memilih English (cadangan: Indonesia).
+ */
 class ArticleController extends Controller
 {
     /** Kolom yang cukup untuk kartu daftar (isi lengkap tidak perlu). */
@@ -20,9 +23,9 @@ class ArticleController extends Controller
     {
         return view('frontend.pages.artikel.index', [
             'kategoriArtikel' => Category::untukArtikel(),
-            'unggulan' => Article::terbit()->terbaru()->first(self::KOLOM_KARTU),
-            'terbaru' => Article::terbit()->terbaru()->skip(1)->first(self::KOLOM_KARTU),
-            'terpopuler' => Article::terbit()->terpopuler()->first(self::KOLOM_KARTU),
+            'unggulan' => Article::terbit()->denganTerjemahan()->terbaru()->first(self::KOLOM_KARTU),
+            'terbaru' => Article::terbit()->denganTerjemahan()->terbaru()->skip(1)->first(self::KOLOM_KARTU),
+            'terpopuler' => Article::terbit()->denganTerjemahan()->terpopuler()->first(self::KOLOM_KARTU),
         ]);
     }
 
@@ -31,7 +34,7 @@ class ArticleController extends Controller
     {
         return view('frontend.pages.pengajaran', [
             'kategori' => $this->kategoriDenganSampul(),
-            'terpopuler' => Article::terbit()->terpopuler()->with('category:id,name')->limit(4)->get(self::KOLOM_KARTU),
+            'terpopuler' => Article::terbit()->denganTerjemahan()->terpopuler()->with('category:id,name')->limit(4)->get(self::KOLOM_KARTU),
         ]);
     }
 
@@ -39,7 +42,7 @@ class ArticleController extends Controller
     public function all(Request $request): View
     {
         $populer = $request->query('urut') === 'populer';
-        $query = Article::terbit()->with('category:id,name');
+        $query = Article::terbit()->denganTerjemahan()->with('category:id,name');
 
         return view('frontend.pages.artikel.daftar', [
             'judul' => $populer ? __('Artikel Terpopuler') : __('Artikel Terbaru'),
@@ -75,16 +78,19 @@ class ArticleController extends Controller
             'judul' => $category->name,
             'kategori' => $category,
             'kategoriArtikel' => Category::untukArtikel(),
-            'artikel' => $category->articles()->terbit()->terbaru()->with('category:id,name')
+            'artikel' => $category->articles()->terbit()->denganTerjemahan()->terbaru()->with('category:id,name')
                 ->simplePaginate(self::PER_HALAMAN, self::KOLOM_KARTU),
         ]);
     }
 
     public function show(?Article $article = null): View
     {
-        $article ??= Article::terbit()->terbaru()->firstOrFail();
+        $article ??= Article::terbit()->denganTerjemahan()->terbaru()->firstOrFail();
         abort_unless((int) $article->status === 1, 404);
         $article->loadMissing('category:id,name');
+        if (! Article::bahasaUtama() && Article::terjemahanSiap()) {
+            $article->loadMissing('terjemahanAktif');
+        }
 
         $bacaJuga = Article::terbit()
             ->whereKeyNot($article->getKey())

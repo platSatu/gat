@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\PunyaTerjemahan;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,9 +11,15 @@ use Illuminate\Support\Str;
 /**
  * Artikel dari database lama (portal_gatsu, tabel `articles`).
  * Gambar disimpan sebagai path relatif dari folder public, mis. "images/judul-artikel.jpg".
+ * title/description di tabel ini = Bahasa Indonesia; versi Inggris di `article_translations` (lihat PunyaTerjemahan).
+ * Di halaman publik pakai $article->tr('title'), ringkasan() dan isi (sudah ikut bahasa pengunjung).
  */
 class Article extends Model
 {
+    use PunyaTerjemahan;
+
+    public const TERJEMAHAN = ArticleTranslation::class;
+
     protected $table = 'articles';
 
     protected $fillable = [
@@ -54,18 +61,40 @@ class Article extends Model
         return $query->orderByDesc('read_count')->orderByDesc('id');
     }
 
-    /** Ringkasan teks polos dari isi artikel (HTML), untuk kartu daftar. */
+    /** Ringkasan teks polos dari isi artikel (HTML), untuk kartu daftar. Ikut bahasa pengunjung. */
     public function ringkasan(int $panjang = 160): string
     {
-        $teks = html_entity_decode(strip_tags((string) $this->description), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        return self::teksPolos($this->tr('description'), $panjang);
+    }
+
+    /** Judul & deskripsi untuk <title>/<meta>: Indonesia pakai meta_* (kalau diisi), bahasa lain pakai terjemahan. */
+    public function metaJudul(): string
+    {
+        return static::bahasaUtama() ? ($this->meta_title ?: $this->title) : $this->tr('title');
+    }
+
+    public function metaDeskripsi(): string
+    {
+        return static::bahasaUtama() && filled($this->meta_description) ? $this->meta_description : $this->ringkasan(155);
+    }
+
+    public static function teksPolos(?string $html, int $panjang = 160): string
+    {
+        $teks = html_entity_decode(strip_tags((string) $html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
         return Str::limit(trim(preg_replace('/\s+/u', ' ', $teks)), $panjang);
     }
 
-    /** Isi artikel (HTML dari admin lama), dibersihkan dari <script>/<style>, atribut on*="..." dan link javascript:. */
+    /** Isi artikel (HTML) dalam bahasa pengunjung, sudah dibersihkan. */
     public function getIsiAttribute(): string
     {
-        $html = (string) $this->description;
+        return self::bersihkanHtml($this->tr('description'));
+    }
+
+    /** HTML dari admin, dibersihkan dari <script>/<style>, atribut on*="..." dan link javascript:. */
+    public static function bersihkanHtml(?string $html): string
+    {
+        $html = (string) $html;
         $html = preg_replace('#<(script|style)\b[^>]*>.*?</\1>#is', '', $html);
         $html = preg_replace('#\s+on[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)#i', '', $html);
         $html = preg_replace('#(href|src)\s*=\s*(["\'])\s*javascript:[^"\']*\2#i', '$1="#"', $html);

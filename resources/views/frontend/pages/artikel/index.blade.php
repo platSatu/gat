@@ -12,8 +12,8 @@
             @if ($unggulan)
                 <div class="featured">
                     <div class="dots"><button class="is-active" aria-label="Slide 1"></button><button aria-label="Slide 2"></button><button aria-label="Slide 3"></button><button aria-label="Slide 4"></button></div>
-                    <a href="{{ route('articles.show', $unggulan) }}" title="{{ $unggulan->title }}">
-                        <img src="{{ $unggulan->image_url ?? asset('images/about/berakar.jpg') }}" alt="{{ $unggulan->title }}">
+                    <a href="{{ route('articles.show', $unggulan) }}" title="{{ $unggulan->tr('title') }}">
+                        <img src="{{ $unggulan->image_url ?? asset('images/about/berakar.jpg') }}" alt="{{ $unggulan->tr('title') }}">
                     </a>
                 </div>
             @endif
@@ -30,7 +30,7 @@
                 <a href="{{ route('articles.show', $item) }}" class="article-card">
                     <img src="{{ $item->image_url ?? asset('images/pages/sejarah.jpg') }}" alt="" loading="lazy">
                     <div class="article-card__body">
-                        <h3>{{ $item->title }}</h3>
+                        <h3>{{ $item->tr('title') }}</h3>
                         <p>{{ $item->ringkasan() }}</p>
                     </div>
                 </a>

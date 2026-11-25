@@ -59,7 +59,7 @@
                             <img src="{{ $item->image_url ?? asset('images/pages/sejarah.jpg') }}" alt="" @unless ($loop->first) loading="lazy" @endunless>
                             <div class="teach-popular__body">
                                 @if ($item->category)<span class="teach-popular__cat">{{ $item->category->name }}</span>@endif
-                                <h3>{{ $item->title }}</h3>
+                                <h3>{{ $item->tr('title') }}</h3>
                                 <p>{{ $item->ringkasan(240) }}</p>
                                 <span class="teach-popular__meta">{{ $item->date_post?->translatedFormat('j F Y') }}</span>
                             </div>

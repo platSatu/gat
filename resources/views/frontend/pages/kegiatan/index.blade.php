@@ -28,7 +28,7 @@
 
         $sebelumnya = $highlight ? [
             'tag' => __('Kegiatan Sebelumnya'),
-            'title' => $highlight->title,
+            'title' => $highlight->tr('title'),
             'date' => $highlight->date_post?->translatedFormat('l, j F Y'),
             'button' => __('Lihat Dokumentasi'),
             'image_url' => $highlight->image_url,

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\PunyaTerjemahan;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -14,6 +15,11 @@ use Illuminate\Support\Str;
  */
 class Highlight extends Model
 {
+    use PunyaTerjemahan;
+
+    /** title/description = Bahasa Indonesia; versi Inggris di `highlight_translations`. Slug selalu dari judul Indonesia. */
+    public const TERJEMAHAN = HighlightTranslation::class;
+
     protected $table = 'highlights';
 
     protected $fillable = [
@@ -92,9 +98,14 @@ class Highlight extends Model
             ->all();
     }
 
-    /** Isi (HTML dari admin lama), dibersihkan seperti isi artikel. */
+    /** Isi (HTML) dalam bahasa pengunjung, dibersihkan seperti isi artikel. */
     public function getIsiAttribute(): string
     {
-        return (new Article(['description' => $this->description]))->isi;
+        return Article::bersihkanHtml($this->tr('description'));
+    }
+
+    public function ringkasan(int $panjang = 155): string
+    {
+        return Article::teksPolos($this->tr('description'), $panjang);
     }
 }

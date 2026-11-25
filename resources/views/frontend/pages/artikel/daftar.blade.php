@@ -17,7 +17,7 @@
                     <a href="{{ route('articles.show', $item) }}" class="strip-card">
                         <img class="strip-card__photo" src="{{ $item->image_url ?? asset('images/pages/sejarah.jpg') }}" alt="" loading="lazy">
                         <div class="strip-card__body">
-                            <h3>{{ $item->title }}</h3>
+                            <h3>{{ $item->tr('title') }}</h3>
                             <p>{{ $item->ringkasan(220) }}</p>
                             <small class="strip-card__meta">
                                 {{ $item->category?->name }}@if ($item->category && $item->date_post) · @endif{{ $item->date_post?->translatedFormat('j F Y') }}

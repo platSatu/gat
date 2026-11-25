@@ -13,6 +13,7 @@ use Illuminate\View\View;
 
 /**
  * CRUD Highlights di admin (tabel `highlights`): judul, deskripsi, video, 8 foto, gambar latar, tanggal, status.
+ * Judul & isi English (tab English di form) disimpan di `highlight_translations`.
  * File baru disimpan di public/uploads/highlights/ (path relatif di kolom, sama seperti data lama "uploads/...").
  * Yang dihapus otomatis hanya file di folder itu; file lama di uploads/ tidak disentuh.
  */
@@ -23,6 +24,7 @@ class HighlightController extends Controller
     public function index(Request $request): View
     {
         $highlights = Highlight::query()
+            ->when(Highlight::terjemahanSiap(), fn ($q) => $q->withExists(['translations as punya_en' => fn ($t) => $t->where('locale', 'en')]))
             ->when($request->filled('search'), fn ($q) => $q->where('title', 'like', '%'.$request->string('search')->trim().'%'))
             ->terbaru()
             ->paginate(10, ['id', 'title', 'image1', 'bghighlights', 'video', 'date_post', 'status'])
@@ -43,7 +45,8 @@ class HighlightController extends Controller
         $data = $this->validasi($request, baru: true);
         $data = $this->prosesFile($request, new Highlight, $data);
 
-        Highlight::create($data);
+        $highlight = Highlight::create($data);
+        $highlight->simpanTerjemahan('en', (array) $request->input('en', []));
 
         return redirect()->route('admin.highlights.index')->with('success', 'Highlight berhasil dibuat.');
     }
@@ -59,6 +62,7 @@ class HighlightController extends Controller
         $data = $this->prosesFile($request, $highlight, $data);
 
         $highlight->update($data);
+        $highlight->simpanTerjemahan('en', (array) $request->input('en', []));
 
         return redirect()->route('admin.highlights.index')->with('success', 'Highlight berhasil diperbarui.');
     }
@@ -90,6 +94,9 @@ class HighlightController extends Controller
             'status' => ['required', 'in:0,1'],
             'video' => ['nullable', 'file', 'mimetypes:video/mp4,video/webm,video/quicktime', 'max:102400'],
             'bghighlights' => $gambar,
+            'en' => ['nullable', 'array'],
+            'en.title' => ['nullable', 'string', 'max:255'],
+            'en.description' => ['nullable', 'string'],
             'hapus' => ['nullable', 'array'],
             'hapus.*' => ['in:'.implode(',', $this->kolomFile())],
         ];
@@ -101,7 +108,7 @@ class HighlightController extends Controller
             $aturan['image1'] = ['required', ...array_slice($gambar, 1)];
         }
 
-        $label = ['title' => 'Title', 'date_post' => 'Date Post', 'video' => 'Video', 'bghighlights' => 'Background'];
+        $label = ['en.title' => 'Title (English)', 'title' => 'Title', 'date_post' => 'Date Post', 'video' => 'Video', 'bghighlights' => 'Background'];
         foreach (Highlight::KOLOM_FOTO as $i => $kolom) {
             $label[$kolom] = 'Foto '.($i + 1);
         }

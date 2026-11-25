@@ -9,8 +9,8 @@
     <div class="home-events__track" data-scroll-track>
         @foreach ($highlights as $highlight)
             <a href="{{ route('highlights.show', $highlight) }}" class="event-card">
-                <img src="{{ $highlight->image_url ?? asset('images/home/event-1.jpg') }}" alt="{{ $highlight->title }}" loading="lazy">
-                <h3>{{ $highlight->title }}</h3>
+                <img src="{{ $highlight->image_url ?? asset('images/home/event-1.jpg') }}" alt="{{ $highlight->tr('title') }}" loading="lazy">
+                <h3>{{ $highlight->tr('title') }}</h3>
             </a>
         @endforeach
     </div>

@@ -38,6 +38,7 @@
                                     @endif
                                 </td>
                                 <td>
+                                    @if ($item->punya_en)<span class="badge badge-info mr-1" title="Sudah ada versi English">EN</span>@endif
                                     @if ($item->status === 1)
                                         <a href="{{ route('highlights.show', $item) }}" target="_blank" rel="noopener" class="text-muted">{{ $item->title }}</a>
                                     @else

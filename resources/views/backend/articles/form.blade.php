@@ -9,7 +9,7 @@
 @endsection
 
 @section('content')
-    {{-- Meniru gbigatsu.id/admins/article/create & edit: Category, Title, Description (TinyMCE), Image, Date Post, Status. --}}
+    {{-- Meniru gbigatsu.id/admins/article/create & edit: Category, Title & Description (tab Indonesia | English), Image, Date Post, Status. --}}
     <div class="card">
         <div class="card-body">
             <h1 class="admin-heading">{{ $baru ? 'Create Article' : 'Edit Article' }}</h1>
@@ -30,17 +30,7 @@
                     @error('category_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
 
-                <div class="form-group">
-                    <label for="title">Title</label>
-                    <input id="title" type="text" name="title" value="{{ old('title', $article->title) }}" required maxlength="255"
-                        @class(['form-control', 'is-invalid' => $errors->has('title')])>
-                    @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea id="description" name="description" rows="18" class="form-control">{{ old('description', $article->description) }}</textarea>
-                </div>
+                @include('backend.partials.lang-tabs', ['model' => $article])
 
                 <div class="form-group">
                     <label for="image">Image</label>
@@ -81,7 +71,7 @@
     <script src="{{ asset('be/assets/plugins/tinymce/tinymce.min.js') }}"></script>
     <script>
         tinymce.init({
-            selector: '#description',
+            selector: '#description, #description_en',
             height: 420,
             menubar: 'file edit insert view format table tools',
             plugins: 'advlist autolink link image lists charmap print preview hr anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking table contextmenu directionality emoticons paste textcolor',
