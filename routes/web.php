@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\AboutSectionController as AdminAboutSectionController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\HighlightController as AdminHighlightController;
 use App\Http\Controllers\Admin\PartnerController as AdminPartnerController;
 use App\Http\Controllers\Admin\Settings\MenuController as AdminMenuController;
@@ -79,9 +80,14 @@ Route::prefix('auth')->group(function () {
     Route::post('logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
 });
 
-// Admin: /admin/...  Hak akses tiap menu diatur di Settings → Setting Menu (middleware akses.menu, config/admin-menu.php).
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'akses.menu'])->group(function () {
-    Route::view('/', 'backend.dashboard')->name('dashboard');
+// Admin: /dashboard/admin/...  Hak akses tiap menu diatur di Settings → Setting Menu (middleware akses.menu, config/admin-menu.php).
+// /dashboard dan alamat lama /admin/... dialihkan ke sini.
+Route::redirect('dashboard', 'dashboard/admin');
+Route::get('admin/{path?}', fn (?string $path = null) => redirect('dashboard/admin'.($path ? '/'.$path : ''), 301))->where('path', '.*');
+
+Route::prefix('dashboard/admin')->name('admin.')->middleware(['auth', 'akses.menu'])->group(function () {
+    // Beranda admin: grafik pengunjung, halaman & artikel terpopuler (App\Support\StatistikDashboard).
+    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
     // Admin memakai ID di URL (slug artikel lama bisa kosong/ganda); halaman publik tetap memakai slug.
     Route::resource('articles', AdminArticleController::class)->except('show')->scoped(['article' => 'id']);
     Route::resource('categories', AdminCategoryController::class)->except('show');

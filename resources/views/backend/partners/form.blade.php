@@ -43,7 +43,7 @@
                     <textarea id="description" name="description" rows="3" maxlength="2000"
                         @class(['form-control', 'is-invalid' => $errors->has('description')])>{{ old('description', $partner->description) }}</textarea>
                     @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                    <small class="form-text text-muted">Opsional. Keterangan singkat, muncul saat kursor diarahkan ke logo.</small>
+                    <small class="form-text text-muted">Opsional. Catatan untuk admin (tidak tampil di beranda, beranda hanya menampilkan logo).</small>
                 </div>
 
                 <div class="row">
@@ -52,7 +52,7 @@
                         <input id="website" type="text" name="website" value="{{ old('website', $partner->website) }}" maxlength="255"
                             @class(['form-control', 'is-invalid' => $errors->has('website')]) placeholder="mis. https://gbi.or.id">
                         @error('website')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        <small class="form-text text-muted">Diisi = logo di beranda bisa diklik dan membuka website ini di tab baru. Kosong = logo tidak bisa diklik.</small>
+                        <small class="form-text text-muted">Diisi = logo di beranda bisa diklik dan pindah ke website ini. Kosong = logo tidak bisa diklik.</small>
                     </div>
                     <div class="col-md-4 form-group">
                         <label for="status">Status</label>

@@ -20,4 +20,16 @@ return [
         'cache_ttl' => (int) env('HMMINISTRY_CACHE_TTL', 1800),
     ],
 
+    // Statistik pengunjung di dashboard admin (tabel visitor_histories, dipakai bersama website lama).
+    'statistik' => [
+        // Hanya kunjungan ke domain ini (dan www.) yang dihitung. Tabel yang sama juga berisi domain lain (mis. hmministry.id).
+        'domain' => env('STATISTIK_DOMAIN', 'gbigatsu.id'),
+        // Hasil hitungan disimpan sementara (menit) supaya dashboard tetap cepat walau tabelnya jutaan baris.
+        'cache_menit' => (int) env('STATISTIK_CACHE_MENIT', 10),
+        // Zona waktu kolom visited_at (website lama menyimpan dalam WIB).
+        'zona_waktu' => env('STATISTIK_ZONA_WAKTU', 'Asia/Jakarta'),
+        // Catat kunjungan halaman publik website ini ke visitor_histories (seperti website lama).
+        'catat_pengunjung' => (bool) env('CATAT_PENGUNJUNG', true),
+    ],
+
 ];

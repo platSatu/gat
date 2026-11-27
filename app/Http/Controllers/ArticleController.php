@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\VisitorHistory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 /**
@@ -88,6 +90,7 @@ class ArticleController extends Controller
         $article ??= Article::terbit()->denganTerjemahan()->terbaru()->firstOrFail();
         abort_unless((int) $article->status === 1, 404);
         $article->loadMissing('category:id,name');
+        $this->hitungDibaca($article);
         if (! Article::bahasaUtama() && Article::terjemahanSiap()) {
             $article->loadMissing('terjemahanAktif');
         }
@@ -100,5 +103,22 @@ class ArticleController extends Controller
             ->get(['id', 'slug', 'title', 'description', 'image']);
 
         return view('frontend.pages.artikel.show', compact('article', 'bacaJuga'));
+    }
+
+    /**
+     * Tambah read_count (sama seperti website lama) satu kali per pengunjung per sesi, robot tidak dihitung.
+     * Lewat query langsung supaya kolom updated_at artikel tidak ikut berubah.
+     */
+    private function hitungDibaca(Article $article): void
+    {
+        $sudah = (array) session('artikel_dibaca', []);
+
+        if (in_array($article->getKey(), $sudah, true) || VisitorHistory::bot(request()->userAgent())) {
+            return;
+        }
+
+        DB::table('articles')->where('id', $article->getKey())->increment('read_count');
+        $article->read_count = (int) $article->read_count + 1;
+        session(['artikel_dibaca' => array_slice([...$sudah, $article->getKey()], -200)]);
     }
 }

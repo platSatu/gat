@@ -18,6 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Bahasa pilihan pengunjung (ID/EN), lihat app/Http/Middleware/SetLocale.php
         $middleware->web(append: [\App\Http\Middleware\SetLocale::class]);
 
+        // Catat kunjungan halaman publik ke visitor_histories (grafik di dashboard admin).
+        $middleware->web(append: [\App\Http\Middleware\CatatPengunjung::class]);
+
         // Hak akses menu admin (Settings → Setting Menu), dipakai di routes/web.php grup admin.
         $middleware->alias(['akses.menu' => \App\Http\Middleware\CekAksesMenu::class]);
     })
