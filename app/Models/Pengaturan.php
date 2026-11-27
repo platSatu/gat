@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Schema;
 use Throwable;
 
 /**
- * Pengaturan website sederhana (tabel `pengaturan`, kunci → nilai), mis. video & gambar latar hero.
+ * Pengaturan website sederhana (tabel `pengaturan`, kunci → nilai): latar hero, SEO, integrasi Google, media sosial.
+ * Bacaan untuk halaman publik lewat App\Support\Situs.
  * Pemakaian: Pengaturan::ambil('hero_video')  /  Pengaturan::simpan('hero_video', 'uploads/hero/x.mp4')
  */
 class Pengaturan extends Model
@@ -38,7 +39,16 @@ class Pengaturan extends Model
 
     public static function simpan(string $kunci, ?string $nilai): void
     {
-        static::query()->updateOrCreate(['kunci' => $kunci], ['nilai' => $nilai]);
+        static::simpanBanyak([$kunci => $nilai]);
+    }
+
+    /** Simpan beberapa pengaturan sekaligus: [kunci => nilai]. Nilai kosong disimpan sebagai null. */
+    public static function simpanBanyak(array $data): void
+    {
+        foreach ($data as $kunci => $nilai) {
+            $nilai = is_string($nilai) ? trim($nilai) : $nilai;
+            static::query()->updateOrCreate(['kunci' => $kunci], ['nilai' => filled($nilai) ? (string) $nilai : null]);
+        }
         static::$semua = null;
         Cache::forget(self::KUNCI_CACHE);
     }

@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\Settings\BahasaController as AdminBahasaControlle
 use App\Http\Controllers\Admin\Settings\MenuController as AdminMenuController;
 use App\Http\Controllers\Admin\Settings\RoleController as AdminRoleController;
 use App\Http\Controllers\Admin\Settings\SettingMenuController as AdminSettingMenuController;
+use App\Http\Controllers\Admin\Settings\SitusController as AdminSitusController;
 use App\Http\Controllers\Admin\Settings\TerjemahanController as AdminTerjemahanController;
 use App\Http\Controllers\Admin\Settings\UserController as AdminUserController;
 use App\Http\Controllers\ArticleController;
@@ -116,6 +117,9 @@ Route::prefix('dashboard/admin')->name('admin.')->middleware(['auth', 'akses.men
         Route::post('menus/sync', [AdminMenuController::class, 'sync'])->name('menus.sync');
         Route::resource('menus', AdminMenuController::class)->except('show');
         Route::resource('setting-menu', AdminSettingMenuController::class)->except('show')->parameters(['setting-menu' => 'settingMenu']);
+        // Situs & SEO: judul/deskripsi, gambar share, favicon, Google Tag Manager/Analytics/Search Console, media sosial.
+        Route::get('situs', [AdminSitusController::class, 'index'])->name('situs.index');
+        Route::post('situs', [AdminSitusController::class, 'simpan'])->name('situs.simpan');
         // Bahasa website & terjemahan teks tampilan (tabel bahasa, terjemahan).
         Route::resource('bahasa', AdminBahasaController::class)->except('show')->parameters(['bahasa' => 'bahasa']);
         Route::post('terjemahan/simpan', [AdminTerjemahanController::class, 'simpan'])->name('terjemahan.simpan');

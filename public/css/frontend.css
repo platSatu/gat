@@ -85,6 +85,8 @@ body.is-locked { overflow: hidden; }
     background: transparent; color: var(--white); cursor: pointer;
     transition: background .2s, color .2s;
 }
+/* Slider dengan satu kartu: panah & titik disembunyikan lewat atribut hidden (frontend.js) — jangan ditimpa display di atas. */
+[data-slider] [hidden] { display: none !important; }
 .round-btn:hover { background: var(--white); color: var(--slate); }
 .round-btn svg { width: 1.125rem; height: 1.125rem; }
 

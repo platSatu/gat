@@ -34,6 +34,7 @@ return [
         ['label' => 'Roles', 'icon' => 'mdi-security', 'route' => 'admin.settings.roles.index', 'active' => 'admin.settings.roles.*', 'superadmin' => true],
         ['label' => 'Menu', 'icon' => 'mdi-format-list-bulleted', 'route' => 'admin.settings.menus.index', 'active' => 'admin.settings.menus.*', 'superadmin' => true],
         ['label' => 'Setting Menu', 'icon' => 'mdi-key-variant', 'route' => 'admin.settings.setting-menu.index', 'active' => 'admin.settings.setting-menu.*', 'superadmin' => true],
+        ['label' => 'Situs & SEO', 'icon' => 'mdi-web', 'route' => 'admin.settings.situs.index', 'active' => 'admin.settings.situs.*', 'superadmin' => true],
         ['label' => 'Bahasa', 'icon' => 'mdi-earth', 'route' => 'admin.settings.bahasa.index', 'active' => 'admin.settings.bahasa.*', 'superadmin' => true],
         ['label' => 'Terjemahan', 'icon' => 'mdi-translate', 'route' => 'admin.settings.terjemahan.index', 'active' => 'admin.settings.terjemahan.*', 'superadmin' => true],
     ],

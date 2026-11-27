@@ -13,11 +13,8 @@
         ['label' => __('Komunitas'), 'url' => route('community'), 'match' => 'komunitas*'],
         ['label' => __('Kontak'), 'url' => route('contact'), 'match' => ['kontak*', 'memberi', 'give']],
     ];
-    $socials = [
-        'Facebook' => 'https://www.facebook.com/',
-        'Instagram' => 'https://www.instagram.com/',
-        'Youtube' => 'https://www.youtube.com/',
-    ];
+    // Link media sosial dari admin Settings → Situs & SEO.
+    $socials = \App\Support\Situs::sosial();
 @endphp
 
 <div class="site-menu" id="site-menu" data-menu aria-hidden="true" role="dialog" aria-modal="true" aria-label="{{ __('Menu') }}">

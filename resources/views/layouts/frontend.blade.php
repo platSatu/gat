@@ -5,6 +5,7 @@
     @include('frontend.partials.head')
 </head>
 <body class="@yield('body_class')">
+    @include('frontend.partials.tag-body')
     @include('frontend.partials.loader')
     @include('frontend.partials.header')
     @include('frontend.partials.menu')
