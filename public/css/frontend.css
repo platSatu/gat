@@ -140,6 +140,9 @@ body.is-locked { overflow: hidden; }
 .lang-switch a.is-active { opacity: 1; }
 .lang-switch a:focus-visible { outline: 2px solid var(--white); outline-offset: 2px; }
 .lang-switch svg { display: block; height: 1.0625rem; width: auto; border-radius: 0.1875rem; }
+/* Bahasa tanpa gambar bendera (ditambah lewat admin): kode bahasa dalam kotak kecil. */
+.lang-switch__code { display: grid; place-items: center; min-width: 1.75rem; height: 1.0625rem; padding: 0 0.25rem; border-radius: 0.1875rem; background: rgba(255, 255, 255, .9); color: #1f2433; font-size: 0.625rem; font-weight: 800; line-height: 1; letter-spacing: .04em; }
+.site-header--dark .lang-switch__code { background: #1f2433; color: #fff; }
 
 @media (max-width: 767px) {
     .site-header__actions { gap: 0.5rem; }

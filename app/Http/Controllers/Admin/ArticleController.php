@@ -23,7 +23,7 @@ class ArticleController extends Controller
     {
         $artikel = Article::query()
             ->with('category:id,name')
-            ->when(Article::terjemahanSiap(), fn ($q) => $q->withExists(['translations as punya_en' => fn ($t) => $t->where('locale', 'en')]))
+            ->when(Article::terjemahanSiap(), fn ($q) => $q->withCount('translations as punya_en'))
             ->when($request->filled('search'), fn ($q) => $q->where('title', 'like', '%'.$request->string('search')->trim().'%'))
             ->when($request->filled('category_id'), fn ($q) => $q->where('category_id', $request->integer('category_id')))
             ->terbaru()
@@ -47,7 +47,7 @@ class ArticleController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $this->validasi($request);
-        unset($data['en']);
+        unset($data['tr']);
         $data['slug'] = $this->slugUnik($data['title']);
         $data['read_count'] = 0;
 
@@ -56,7 +56,7 @@ class ArticleController extends Controller
         }
 
         $article = Article::create($data);
-        $article->simpanTerjemahan('en', (array) $request->input('en', []));
+        $article->simpanSemuaTerjemahan((array) $request->input('tr', []));
 
         return redirect()->route('admin.articles.index')->with('success', 'Artikel berhasil dibuat.');
     }
@@ -72,7 +72,7 @@ class ArticleController extends Controller
     public function update(Request $request, Article $article): RedirectResponse
     {
         $data = $this->validasi($request);
-        unset($data['en']);
+        unset($data['tr']);
 
         if ($request->hasFile('image')) {
             $lama = $article->image;
@@ -81,7 +81,7 @@ class ArticleController extends Controller
         }
 
         $article->update($data);
-        $article->simpanTerjemahan('en', (array) $request->input('en', []));
+        $article->simpanSemuaTerjemahan((array) $request->input('tr', []));
 
         return redirect()->route('admin.articles.index')->with('success', 'Artikel berhasil diperbarui.');
     }
@@ -103,11 +103,9 @@ class ArticleController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'date_post' => ['required', 'date'],
             'status' => ['required', 'in:0,1'],
-            'en' => ['nullable', 'array'],
-            'en.title' => ['nullable', 'string', 'max:255'],
-            'en.description' => ['nullable', 'string'],
+            ...Article::aturanTerjemahan(['title' => 255]),
         ], [], [
-            'en.title' => 'Title (English)',
+            'tr.*.title' => 'Title (terjemahan)',
             'category_id' => 'Category', 'title' => 'Title', 'image' => 'Image', 'date_post' => 'Date Post',
         ]);
     }

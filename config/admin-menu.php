@@ -23,6 +23,7 @@ return [
     'GBI Gatsu' => [
         ['label' => 'Article', 'icon' => 'mdi-file-document', 'route' => 'admin.articles.index', 'active' => 'admin.articles.*', 'menu' => 'Page-Article'],
         ['label' => 'Category Article', 'icon' => 'mdi-tag-multiple', 'route' => 'admin.categories.index', 'active' => 'admin.categories.*', 'menu' => 'Page-Article'],
+        ['label' => 'Hero Beranda', 'icon' => 'mdi-view-carousel', 'route' => 'admin.hero.index', 'active' => 'admin.hero.*', 'menu' => 'Page-Hero'],
         ['label' => 'Highlights', 'icon' => 'mdi-star-circle', 'route' => 'admin.highlights.index', 'active' => 'admin.highlights.*', 'menu' => 'Page-Highlights'],
         ['label' => 'Tentang Kami', 'icon' => 'mdi-information-outline', 'route' => 'admin.about.index', 'active' => 'admin.about.*', 'menu' => 'Page-Tentang-Kami'],
         ['label' => 'Mitra', 'icon' => 'mdi-account-multiple', 'route' => 'admin.partners.index', 'active' => 'admin.partners.*', 'menu' => 'Page-Mitra'],
@@ -33,6 +34,8 @@ return [
         ['label' => 'Roles', 'icon' => 'mdi-security', 'route' => 'admin.settings.roles.index', 'active' => 'admin.settings.roles.*', 'superadmin' => true],
         ['label' => 'Menu', 'icon' => 'mdi-format-list-bulleted', 'route' => 'admin.settings.menus.index', 'active' => 'admin.settings.menus.*', 'superadmin' => true],
         ['label' => 'Setting Menu', 'icon' => 'mdi-key-variant', 'route' => 'admin.settings.setting-menu.index', 'active' => 'admin.settings.setting-menu.*', 'superadmin' => true],
+        ['label' => 'Bahasa', 'icon' => 'mdi-earth', 'route' => 'admin.settings.bahasa.index', 'active' => 'admin.settings.bahasa.*', 'superadmin' => true],
+        ['label' => 'Terjemahan', 'icon' => 'mdi-translate', 'route' => 'admin.settings.terjemahan.index', 'active' => 'admin.settings.terjemahan.*', 'superadmin' => true],
     ],
 
 ];

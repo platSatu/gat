@@ -4,11 +4,14 @@ use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\AboutSectionController as AdminAboutSectionController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\HeroController as AdminHeroController;
 use App\Http\Controllers\Admin\HighlightController as AdminHighlightController;
 use App\Http\Controllers\Admin\PartnerController as AdminPartnerController;
+use App\Http\Controllers\Admin\Settings\BahasaController as AdminBahasaController;
 use App\Http\Controllers\Admin\Settings\MenuController as AdminMenuController;
 use App\Http\Controllers\Admin\Settings\RoleController as AdminRoleController;
 use App\Http\Controllers\Admin\Settings\SettingMenuController as AdminSettingMenuController;
+use App\Http\Controllers\Admin\Settings\TerjemahanController as AdminTerjemahanController;
 use App\Http\Controllers\Admin\Settings\UserController as AdminUserController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\Auth\LoginController;
@@ -28,12 +31,14 @@ Route::get('media/{id}', [HighlightController::class, 'legacy'])->whereNumber('i
 // Cari gereja & jadwal ibadah (bagian "Gereja Terdekat" di beranda). Data dari HMMinistry, lihat Frontend\GerejaController.
 Route::get('gereja/cari', [GerejaController::class, 'cari'])->middleware('throttle:60,1')->name('gereja.cari');
 
-// Ganti bahasa (tombol bendera di header): /bahasa/id atau /bahasa/en, lalu kembali ke halaman sebelumnya.
+// Ganti bahasa (tombol bahasa di header): /bahasa/id, /bahasa/en, ... lalu kembali ke halaman sebelumnya.
+// Daftar bahasa dari tabel `bahasa` (admin Settings → Bahasa).
 Route::get('bahasa/{locale}', function (string $locale) {
+    abort_unless(in_array($locale, \App\Models\Bahasa::kodeAktif(), true), 404);
     session(['locale' => $locale]);
 
     return redirect()->back(fallback: route('home'));
-})->whereIn('locale', \App\Http\Middleware\SetLocale::SUPPORTED)->name('locale');
+})->where('locale', '[A-Za-z]{2,3}(-[A-Za-z0-9]{2,4})?')->name('locale');
 
 Route::prefix('tentang')->name('about')->group(function () {
     Route::get('/', [AboutController::class, 'index']);   // blok dari tabel about_sections (admin: Tentang Kami)
@@ -96,6 +101,10 @@ Route::prefix('dashboard/admin')->name('admin.')->middleware(['auth', 'akses.men
     // Tentang Kami: blok halaman /tentang (ID di URL admin), plus tombol naik/turun urutan.
     Route::resource('about', AdminAboutSectionController::class)->except('show')->scoped(['about' => 'id']);
     Route::post('about/{about:id}/move/{arah}', [AdminAboutSectionController::class, 'move'])->whereIn('arah', ['up', 'down'])->name('about.move');
+    // Hero beranda: kartu sambutan (urutan naik/turun) + video/gambar latar.
+    Route::post('hero/latar', [AdminHeroController::class, 'latar'])->name('hero.latar');
+    Route::post('hero/{hero}/move/{arah}', [AdminHeroController::class, 'move'])->whereIn('arah', ['up', 'down'])->name('hero.move');
+    Route::resource('hero', AdminHeroController::class)->except('show')->parameters(['hero' => 'hero']);
     // Pelayanan & Mitra: logo di beranda (ID di URL admin).
     Route::resource('partners', AdminPartnerController::class)->except('show');
 
@@ -107,6 +116,11 @@ Route::prefix('dashboard/admin')->name('admin.')->middleware(['auth', 'akses.men
         Route::post('menus/sync', [AdminMenuController::class, 'sync'])->name('menus.sync');
         Route::resource('menus', AdminMenuController::class)->except('show');
         Route::resource('setting-menu', AdminSettingMenuController::class)->except('show')->parameters(['setting-menu' => 'settingMenu']);
+        // Bahasa website & terjemahan teks tampilan (tabel bahasa, terjemahan).
+        Route::resource('bahasa', AdminBahasaController::class)->except('show')->parameters(['bahasa' => 'bahasa']);
+        Route::post('terjemahan/simpan', [AdminTerjemahanController::class, 'simpan'])->name('terjemahan.simpan');
+        Route::post('terjemahan/pindai', [AdminTerjemahanController::class, 'pindai'])->name('terjemahan.pindai');
+        Route::resource('terjemahan', AdminTerjemahanController::class)->only(['index', 'store', 'destroy'])->parameters(['terjemahan' => 'terjemahan']);
     });
 });
 

@@ -1,64 +1,78 @@
 {{--
-    Tab Indonesia | English untuk judul & isi (form admin Artikel dan Highlights).
-    Indonesia = kolom di tabel utama (wajib). English = tabel terjemahan (boleh kosong -> website memakai versi Indonesia).
-    Parameter: $model (Article/Highlight), $titleHelp (opsional, keterangan di bawah judul Indonesia).
+    Tab bahasa untuk form admin konten (Artikel, Highlights, Tentang Kami, Hero).
+    Tab pertama = Bahasa Indonesia (kolom di tabel utama, wajib). Tab lain = bahasa dari admin Settings → Bahasa,
+    disimpan di tabel terjemahan (boleh kosong -> website memakai versi Indonesia). Input: tr[kode][kolom].
+
+    Parameter:
+      $model      model yang memakai trait PunyaTerjemahan
+      $kolom      (opsional) daftar isian: [kolom, label, jenis (text|textarea|editor), keterangan, wajib]
+                  bawaan: Title (text, wajib) + Description (editor)
+      $titleHelp  (opsional) keterangan di bawah isian pertama (Indonesia)
+    Editor: textarea jenis "editor" diberi kelas js-editor (TinyMCE di form masing-masing memakai selector textarea.js-editor).
 --}}
 @php
-    $en = $model->terjemahan('en');
+    $kolom ??= [
+        ['title', 'Title', 'text', $titleHelp ?? null, true],
+        ['description', 'Description', 'editor', null, false],
+    ];
     $siap = $model::terjemahanSiap();
-    $enError = $errors->has('en.title') || $errors->has('en.description');
+    $bahasaLain = \App\Models\Bahasa::lain();
+    $tabError = $bahasaLain->first(fn ($b) => $errors->has('tr.'.$b['kode'].'.*'))['kode'] ?? null;
+    $aktif = $tabError ?? 'id';
 @endphp
 
 <ul class="nav nav-tabs lang-tabs" role="tablist">
     <li class="nav-item">
-        <a @class(['nav-link', 'active' => ! $enError]) data-toggle="tab" href="#tab-id" role="tab">Indonesia <small class="text-muted">(utama)</small></a>
+        <a @class(['nav-link', 'active' => $aktif === 'id']) data-toggle="tab" href="#tab-id" role="tab">Indonesia <small class="text-muted">(utama)</small></a>
     </li>
-    <li class="nav-item">
-        <a @class(['nav-link', 'active' => $enError]) data-toggle="tab" href="#tab-en" role="tab">
-            English
-            @if (filled($en->title) || filled($en->description))<span class="badge badge-info ml-1">EN</span>@endif
-        </a>
-    </li>
+    @foreach ($bahasaLain as $b)
+        @php $tr = $model->terjemahan($b['kode']); @endphp
+        <li class="nav-item">
+            <a @class(['nav-link', 'active' => $aktif === $b['kode']]) data-toggle="tab" href="#tab-{{ $b['kode'] }}" role="tab">
+                {{ $b['nama'] }}
+                @if ($tr->exists)<span class="badge badge-info ml-1">{{ strtoupper($b['kode']) }}</span>@endif
+            </a>
+        </li>
+    @endforeach
 </ul>
 
 <div class="tab-content lang-tab-content">
-    <div @class(['tab-pane', 'fade', 'show active' => ! $enError]) id="tab-id" role="tabpanel">
-        <div class="form-group">
-            <label for="title">Title</label>
-            <input id="title" type="text" name="title" value="{{ old('title', $model->title) }}" required maxlength="255"
-                @class(['form-control', 'is-invalid' => $errors->has('title')])>
-            @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
-            @isset($titleHelp)<small class="form-text text-muted">{{ $titleHelp }}</small>@endisset
+    @foreach ([['kode' => 'id', 'nama' => 'Indonesia'], ...$bahasaLain->all()] as $b)
+        @php
+            $utama = $b['kode'] === 'id';
+            $tr = $utama ? $model : $model->terjemahan($b['kode']);
+        @endphp
+        <div @class(['tab-pane', 'fade', 'show active' => $aktif === $b['kode']]) id="tab-{{ $b['kode'] }}" role="tabpanel">
+            @if (! $utama && ! $siap)
+                <div class="alert alert-warning mb-0">Tabel terjemahan untuk konten ini belum ada di database.</div>
+            @else
+                @unless ($utama)
+                    <p class="text-muted">Boleh dikosongkan. Bagian yang kosong tampil dalam Bahasa Indonesia saat pengunjung memilih {{ $b['nama'] }}.</p>
+                @endunless
+
+                @foreach ($kolom as [$nama, $label, $jenis, $bantuan, $wajib])
+                    @php
+                        $field = $utama ? $nama : "tr[{$b['kode']}][$nama]";
+                        $kunci = $utama ? $nama : "tr.{$b['kode']}.$nama";
+                        $id = $utama ? $nama : "{$nama}_{$b['kode']}";
+                        $nilai = old($kunci, $tr->{$nama});
+                    @endphp
+                    <div @class(['form-group', 'mb-0' => $loop->last])>
+                        <label for="{{ $id }}">{{ $label }}@unless ($utama) ({{ $b['nama'] }})@endunless @if ($utama && $wajib)<span class="text-danger">*</span>@endif</label>
+                        @if ($jenis === 'text')
+                            <input id="{{ $id }}" type="text" name="{{ $field }}" value="{{ $nilai }}" maxlength="255" @if ($utama && $wajib) required @endif
+                                @class(['form-control', 'is-invalid' => $errors->has($kunci)])>
+                        @else
+                            <textarea id="{{ $id }}" name="{{ $field }}" rows="{{ $jenis === 'editor' ? 14 : 4 }}"
+                                @class(['form-control', 'js-editor' => $jenis === 'editor', 'is-invalid' => $errors->has($kunci)])>{{ $nilai }}</textarea>
+                        @endif
+                        @error($kunci)<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        @if ($utama && $bantuan)<small class="form-text text-muted">{{ $bantuan }}</small>@endif
+                    </div>
+                @endforeach
+            @endif
         </div>
-
-        <div class="form-group mb-0">
-            <label for="description">Description</label>
-            <textarea id="description" name="description" rows="14" class="form-control">{{ old('description', $model->description) }}</textarea>
-        </div>
-    </div>
-
-    <div @class(['tab-pane', 'fade', 'show active' => $enError]) id="tab-en" role="tabpanel">
-        @if ($siap)
-            <p class="text-muted">Boleh dikosongkan. Bagian yang kosong akan tampil dalam Bahasa Indonesia saat pengunjung memilih English.</p>
-            <div class="form-group">
-                <label for="en_title">Title (English)</label>
-                <input id="en_title" type="text" name="en[title]" value="{{ old('en.title', $en->title) }}" maxlength="255"
-                    @class(['form-control', 'is-invalid' => $errors->has('en.title')])>
-                @error('en.title')<div class="invalid-feedback">{{ $message }}</div>@enderror
-            </div>
-
-            <div class="form-group mb-0">
-                <label for="description_en">Description (English)</label>
-                <textarea id="description_en" name="en[description]" rows="14" class="form-control">{{ old('en.description', $en->description) }}</textarea>
-            </div>
-        @else
-            <div class="alert alert-warning mb-0">
-                Tabel terjemahan belum ada di database. Jalankan
-                <code>php artisan migrate --path=database/migrations/2026_11_25_100000_create_translation_tables.php</code>
-                atau impor <code>database/sql/translation_tables.sql</code> lewat phpMyAdmin.
-            </div>
-        @endif
-    </div>
+    @endforeach
 </div>
 
 @once

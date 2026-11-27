@@ -2,16 +2,13 @@
 
 @php
     $baru = ! $section->exists;
-    $en = $section->terjemahan('en');
-    $siapEn = \App\Models\AboutSection::terjemahanSiap();
-    $enError = collect(['en.name', 'en.subtitle', 'en.excerpt', 'en.description', 'en.button_text'])->contains(fn ($k) => $errors->has($k));
-    // Isian per bahasa: [kolom, label, jenis, keterangan]
+    // Isian per bahasa (tab Indonesia + bahasa lain dari Settings → Bahasa): [kolom, label, jenis, keterangan, wajib]
     $teks = [
-        ['name', 'Name', 'text', 'Judul blok (huruf besar otomatis di website).'],
-        ['subtitle', 'Subtitle', 'text', 'Opsional. Sub-judul kecil di bawah judul, mis. "Berawal dari sebuah panggilan".'],
-        ['excerpt', 'Teks singkat', 'textarea', 'Tampil di halaman Tentang (di atas tombol).'],
-        ['description', 'Isi lengkap', 'editor', 'Isi halaman detail /tentang/{slug}. Kosong = halaman detail memakai teks singkat.'],
-        ['button_text', 'Tulisan tombol', 'text', 'Kosong = "Lihat Selengkapnya".'],
+        ['name', 'Name', 'text', 'Judul blok (huruf besar otomatis di website).', true],
+        ['subtitle', 'Subtitle', 'text', 'Opsional. Sub-judul kecil di bawah judul, mis. "Berawal dari sebuah panggilan".', false],
+        ['excerpt', 'Teks singkat', 'textarea', 'Tampil di halaman Tentang (di atas tombol).', false],
+        ['description', 'Isi lengkap', 'editor', 'Isi halaman detail /tentang/{slug}. Kosong = halaman detail memakai teks singkat.', false],
+        ['button_text', 'Tulisan tombol', 'text', 'Kosong = "Lihat Selengkapnya".', false],
     ];
 @endphp
 
@@ -22,7 +19,7 @@
 @endsection
 
 @section('content')
-    {{-- Form blok Tentang Kami: teks (tab Indonesia | English), slug, background + warnai biru, link tombol, urutan, status. --}}
+    {{-- Form blok Tentang Kami: teks (tab per bahasa), slug, background + warnai biru, link tombol, urutan, status. --}}
     <div class="card">
         <div class="card-body">
             <h1 class="admin-heading">{{ $baru ? 'Tambah Blok Tentang Kami' : 'Edit Blok Tentang Kami' }}</h1>
@@ -32,48 +29,7 @@
                 @csrf
                 @unless ($baru) @method('PUT') @endunless
 
-                <ul class="nav nav-tabs lang-tabs" role="tablist">
-                    <li class="nav-item"><a @class(['nav-link', 'active' => ! $enError]) data-toggle="tab" href="#tab-id" role="tab">Indonesia <small class="text-muted">(utama)</small></a></li>
-                    <li class="nav-item">
-                        <a @class(['nav-link', 'active' => $enError]) data-toggle="tab" href="#tab-en" role="tab">English
-                            @if ($en->exists)<span class="badge badge-info ml-1">EN</span>@endif
-                        </a>
-                    </li>
-                </ul>
-                <div class="tab-content lang-tab-content">
-                    @foreach (['id' => 'tab-id', 'en' => 'tab-en'] as $lang => $tab)
-                        <div @class(['tab-pane', 'fade', 'show active' => ($lang === 'en') === $enError]) id="{{ $tab }}" role="tabpanel">
-                            @if ($lang === 'en' && ! $siapEn)
-                                <div class="alert alert-warning mb-0">Tabel terjemahan belum ada di database.</div>
-                            @else
-                            @if ($lang === 'en')
-                                <p class="text-muted">Boleh dikosongkan. Bagian yang kosong tampil dalam Bahasa Indonesia saat pengunjung memilih English.</p>
-                            @endif
-                            @foreach ($teks as [$kolom, $label, $jenis, $bantuan])
-                                @php
-                                    $nama = $lang === 'en' ? "en[$kolom]" : $kolom;
-                                    $kunci = $lang === 'en' ? "en.$kolom" : $kolom;
-                                    $id = $lang === 'en' ? "{$kolom}_en" : $kolom;
-                                    $nilai = old($kunci, $lang === 'en' ? $en->{$kolom} : $section->{$kolom});
-                                @endphp
-                                <div @class(['form-group', 'mb-0' => $loop->last])>
-                                    <label for="{{ $id }}">{{ $label }}@if ($lang === 'en') (English)@endif @if ($kolom === 'name' && $lang === 'id')<span class="text-danger">*</span>@endif</label>
-                                    @if ($jenis === 'text')
-                                        <input id="{{ $id }}" type="text" name="{{ $nama }}" value="{{ $nilai }}" maxlength="255"
-                                            @if ($kolom === 'name' && $lang === 'id') required @endif
-                                            @class(['form-control', 'is-invalid' => $errors->has($kunci)])>
-                                    @else
-                                        <textarea id="{{ $id }}" name="{{ $nama }}" rows="{{ $jenis === 'editor' ? 12 : 4 }}"
-                                            @class(['form-control', 'js-editor' => $jenis === 'editor', 'is-invalid' => $errors->has($kunci)])>{{ $nilai }}</textarea>
-                                    @endif
-                                    @error($kunci)<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                                    @if ($lang === 'id')<small class="form-text text-muted">{{ $bantuan }}</small>@endif
-                                </div>
-                            @endforeach
-                            @endif
-                        </div>
-                    @endforeach
-                </div>
+                @include('backend.partials.lang-tabs', ['model' => $section, 'kolom' => $teks])
 
                 <div class="row">
                     <div class="col-md-6 form-group">
@@ -145,8 +101,6 @@
 
 @push('styles')
     <style>
-        .lang-tabs { margin-bottom: 0; }
-        .lang-tab-content { padding: 20px; margin-bottom: 20px; border: 1px solid #dee2e6; border-top: 0; border-radius: 0 0 6px 6px; }
         .admin-photo { display: block; width: 100%; max-width: 420px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 6px; background: #eee; }
     </style>
 @endpush

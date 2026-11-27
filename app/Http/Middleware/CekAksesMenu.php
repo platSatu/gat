@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * - Dashboard admin: semua user yang login.
  * - Route yang terdaftar di config/admin-menu.php: dicek hak menunya.
- *     index/show = list, create/store = add, edit/update/move = edit, destroy = delete.
+ *     index/show = list, create/store = add, edit/update/move/latar = edit, destroy = delete.
  * - Route admin lain yang TIDAK terdaftar: hanya superadmin (aman secara default).
  */
 class CekAksesMenu
@@ -20,7 +20,7 @@ class CekAksesMenu
     private const HAK_PER_AKSI = [
         'index' => 'list', 'show' => 'list',
         'create' => 'add', 'store' => 'add',
-        'edit' => 'edit', 'update' => 'edit', 'move' => 'edit',
+        'edit' => 'edit', 'update' => 'edit', 'move' => 'edit', 'latar' => 'edit',
         'destroy' => 'delete',
     ];
 

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Support\TerjemahanLoader;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,7 +12,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Teks __('...') dibaca dari tabel `terjemahan` (admin Settings → Terjemahan), bukan hanya lang/*.json.
+        $this->app->extend('translation.loader', fn ($loader) => new TerjemahanLoader($loader));
     }
 
     /**

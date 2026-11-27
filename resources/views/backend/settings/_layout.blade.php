@@ -8,6 +8,8 @@
         ['Roles', 'admin.settings.roles.index', 'admin.settings.roles.*', 'mdi-security'],
         ['Menu', 'admin.settings.menus.index', 'admin.settings.menus.*', 'mdi-format-list-bulleted'],
         ['Setting Menu', 'admin.settings.setting-menu.index', 'admin.settings.setting-menu.*', 'mdi-key-variant'],
+        ['Bahasa', 'admin.settings.bahasa.index', 'admin.settings.bahasa.*', 'mdi-earth'],
+        ['Terjemahan', 'admin.settings.terjemahan.index', 'admin.settings.terjemahan.*', 'mdi-translate'],
     ];
 @endphp
 

@@ -71,7 +71,7 @@
     <script src="{{ asset('be/assets/plugins/tinymce/tinymce.min.js') }}"></script>
     <script>
         tinymce.init({
-            selector: '#description, #description_en',
+            selector: 'textarea.js-editor',
             height: 420,
             menubar: 'file edit insert view format table tools',
             plugins: 'advlist autolink link image lists charmap print preview hr anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking table contextmenu directionality emoticons paste textcolor',

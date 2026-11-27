@@ -1,3 +1,4 @@
+{{-- Footer. Teksnya bisa diubah/diterjemahkan di admin Settings → Terjemahan. --}}
 <footer class="site-footer">
-    Copyright GBIGatsu {{ date('Y') }}
+    {{ __('Copyright GBIGatsu :tahun', ['tahun' => date('Y')]) }}
 </footer>

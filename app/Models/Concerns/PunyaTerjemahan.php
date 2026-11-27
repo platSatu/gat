@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Isi dua bahasa untuk model yang punya tabel terjemahan (Article, Highlight).
+ * Isi multi-bahasa untuk model yang punya tabel terjemahan (Article, Highlight, AboutSection, HeroSlide).
+ * Daftar bahasa dari tabel `bahasa` (admin Settings → Bahasa); form admin mengirim tr[kode][kolom].
  *
  * - Kolom di tabel utama = Bahasa Indonesia (bahasa utama, tidak diubah).
  * - $model->tr('title') di halaman publik: versi bahasa yang sedang dipilih kalau sudah diisi,
@@ -85,6 +86,25 @@ trait PunyaTerjemahan
 
         return $this->translations->firstWhere('locale', $locale)
             ?? new (static::TERJEMAHAN)(['locale' => $locale]);
+    }
+
+    /** Simpan semua bahasa dari form admin (input tr[kode][kolom]). Bahasa yang tidak aktif tidak disentuh. */
+    public function simpanSemuaTerjemahan(array $input): void
+    {
+        foreach (\App\Models\Bahasa::lain() as $bahasa) {
+            $this->simpanTerjemahan($bahasa['kode'], (array) ($input[$bahasa['kode']] ?? []));
+        }
+    }
+
+    /** Aturan validasi untuk input tr[kode][kolom] (dipakai controller admin). */
+    public static function aturanTerjemahan(array $panjang = []): array
+    {
+        $aturan = ['tr' => ['nullable', 'array'], 'tr.*' => ['nullable', 'array']];
+        foreach (static::kolomTerjemahan() as $kolom) {
+            $aturan["tr.*.$kolom"] = ['nullable', 'string', ...(isset($panjang[$kolom]) ? ['max:'.$panjang[$kolom]] : [])];
+        }
+
+        return $aturan;
     }
 
     /** Simpan terjemahan dari form admin. Semua isian kosong -> terjemahan dihapus. */

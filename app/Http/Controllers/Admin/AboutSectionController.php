@@ -30,7 +30,7 @@ class AboutSectionController extends Controller
 
         $sections = $siap
             ? AboutSection::query()->urut()
-                ->when(AboutSection::terjemahanSiap(), fn ($q) => $q->withExists(['translations as punya_en' => fn ($t) => $t->where('locale', 'en')]))
+                ->when(AboutSection::terjemahanSiap(), fn ($q) => $q->withCount('translations as punya_en'))
                 ->get()
             : collect();
 
@@ -54,7 +54,7 @@ class AboutSectionController extends Controller
         $data = $this->validasi($request, new AboutSection);
 
         $section = AboutSection::create($this->prosesBackground($request, new AboutSection, $data));
-        $section->simpanTerjemahan('en', (array) $request->input('en', []));
+        $section->simpanSemuaTerjemahan((array) $request->input('tr', []));
 
         return redirect()->route('admin.about.index')->with('success', 'Blok Tentang Kami berhasil dibuat.');
     }
@@ -69,7 +69,7 @@ class AboutSectionController extends Controller
         $data = $this->validasi($request, $about);
 
         $about->update($this->prosesBackground($request, $about, $data));
-        $about->simpanTerjemahan('en', (array) $request->input('en', []));
+        $about->simpanSemuaTerjemahan((array) $request->input('tr', []));
 
         return redirect()->route('admin.about.index')->with('success', 'Blok Tentang Kami berhasil diperbarui.');
     }
@@ -122,21 +122,16 @@ class AboutSectionController extends Controller
             'link' => ['nullable', 'string', 'max:255'],
             'sort_order' => ['required', 'integer', 'min:0'],
             'status' => ['required', 'in:0,1'],
-            'en' => ['nullable', 'array'],
-            'en.name' => ['nullable', 'string', 'max:255'],
-            'en.subtitle' => ['nullable', 'string', 'max:255'],
-            'en.excerpt' => ['nullable', 'string', 'max:2000'],
-            'en.description' => ['nullable', 'string'],
-            'en.button_text' => ['nullable', 'string', 'max:255'],
+            ...AboutSection::aturanTerjemahan(['name' => 255, 'subtitle' => 255, 'excerpt' => 2000, 'button_text' => 255]),
         ], [
             'slug.not_in' => 'Slug ini sudah dipakai halaman lain (/tentang/sejarah, /tentang/dna-kami).',
         ], [
             'name' => 'Name', 'excerpt' => 'Teks singkat', 'background' => 'Background', 'sort_order' => 'Urutan',
-            'en.name' => 'Name (English)',
+            'tr.*.name' => 'Name (terjemahan)',
         ]);
 
         $data['tint'] = $request->boolean('tint');
-        unset($data['en'], $data['background']);
+        unset($data['tr'], $data['background']);
 
         return $data;
     }

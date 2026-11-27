@@ -50,7 +50,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        @if ($item->punya_en)<span class="badge badge-info mr-1" title="Sudah ada versi English">EN</span>@endif
+                                        @if ($item->punya_en)<span class="badge badge-info mr-1" title="Sudah diterjemahkan ke {{ $item->punya_en }} bahasa">{{ $item->punya_en }} bhs</span>@endif
                                         <strong>{{ $item->name }}</strong><br>
                                         @if ($item->status)
                                             <a href="{{ route('about.show', $item) }}" target="_blank" rel="noopener" class="text-muted small">/tentang/{{ $item->slug }}</a>
