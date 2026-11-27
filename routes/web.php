@@ -5,6 +5,10 @@ use App\Http\Controllers\Admin\AboutSectionController as AdminAboutSectionContro
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\HighlightController as AdminHighlightController;
 use App\Http\Controllers\Admin\PartnerController as AdminPartnerController;
+use App\Http\Controllers\Admin\Settings\MenuController as AdminMenuController;
+use App\Http\Controllers\Admin\Settings\RoleController as AdminRoleController;
+use App\Http\Controllers\Admin\Settings\SettingMenuController as AdminSettingMenuController;
+use App\Http\Controllers\Admin\Settings\UserController as AdminUserController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Frontend\AboutController;
@@ -75,8 +79,8 @@ Route::prefix('auth')->group(function () {
     Route::post('logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
 });
 
-// Admin: /admin/...
-Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+// Admin: /admin/...  Hak akses tiap menu diatur di Settings → Setting Menu (middleware akses.menu, config/admin-menu.php).
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'akses.menu'])->group(function () {
     Route::view('/', 'backend.dashboard')->name('dashboard');
     // Admin memakai ID di URL (slug artikel lama bisa kosong/ganda); halaman publik tetap memakai slug.
     Route::resource('articles', AdminArticleController::class)->except('show')->scoped(['article' => 'id']);
@@ -88,6 +92,16 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('about/{about:id}/move/{arah}', [AdminAboutSectionController::class, 'move'])->whereIn('arah', ['up', 'down'])->name('about.move');
     // Pelayanan & Mitra: logo di beranda (ID di URL admin).
     Route::resource('partners', AdminPartnerController::class)->except('show');
+
+    // Settings (hanya superadmin): user, role, menu, dan hak menu per user. Memakai tabel lama (users, roles, menus, setting_menu, cekrole).
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::resource('users', AdminUserController::class)->except('show');
+        Route::post('users/{user}/verify', [AdminUserController::class, 'verify'])->name('users.verify');
+        Route::resource('roles', AdminRoleController::class)->except('show');
+        Route::post('menus/sync', [AdminMenuController::class, 'sync'])->name('menus.sync');
+        Route::resource('menus', AdminMenuController::class)->except('show');
+        Route::resource('setting-menu', AdminSettingMenuController::class)->except('show')->parameters(['setting-menu' => 'settingMenu']);
+    });
 });
 
 // Uji koneksi database lama + gambar (HANYA di local, APP_ENV=local). Boleh dihapus setelah selesai.

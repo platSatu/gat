@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Bahasa pilihan pengunjung (ID/EN), lihat app/Http/Middleware/SetLocale.php
         $middleware->web(append: [\App\Http\Middleware\SetLocale::class]);
+
+        // Hak akses menu admin (Settings → Setting Menu), dipakai di routes/web.php grup admin.
+        $middleware->alias(['akses.menu' => \App\Http\Middleware\CekAksesMenu::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

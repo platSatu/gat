@@ -1,18 +1,14 @@
 {{--
-    Menu kiri admin. Tambah menu baru cukup di array $menu di bawah:
-    ['title' => 'Judul grup'] atau ['label', 'icon', 'route', 'active' (pola nama route)].
+    Menu kiri admin. Daftar menunya ada di config/admin-menu.php (bukan di sini).
+    Yang tampil hanya menu yang boleh dibuka user ini (Settings → Setting Menu); superadmin melihat semua.
 --}}
 @php
-    $menu = [
-        ['title' => 'Main Menu'],
-        ['label' => 'Dashboard', 'icon' => 'mdi-airplay', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard'],
-        ['title' => 'GBI Gatsu'],
-        ['label' => 'Article', 'icon' => 'mdi-file-document', 'route' => 'admin.articles.index', 'active' => 'admin.articles.*'],
-        ['label' => 'Category Article', 'icon' => 'mdi-tag-multiple', 'route' => 'admin.categories.index', 'active' => 'admin.categories.*'],
-        ['label' => 'Highlights', 'icon' => 'mdi-star-circle', 'route' => 'admin.highlights.index', 'active' => 'admin.highlights.*'],
-        ['label' => 'Tentang Kami', 'icon' => 'mdi-information-outline', 'route' => 'admin.about.index', 'active' => 'admin.about.*'],
-        ['label' => 'Mitra', 'icon' => 'mdi-account-multiple', 'route' => 'admin.partners.index', 'active' => 'admin.partners.*'],
-    ];
+    $pengguna = auth()->user();
+    $grupMenu = collect(config('admin-menu', []))
+        ->map(fn ($items) => collect($items)->filter(fn ($item) => ! empty($item['superadmin'])
+            ? $pengguna->isSuperadmin()
+            : $pengguna->bolehMenu($item['menu'] ?? null)))
+        ->filter(fn ($items) => $items->isNotEmpty());
 @endphp
 
 <div class="left side-menu">
@@ -31,17 +27,24 @@
     <div class="sidebar-inner niceScrollleft">
         <div id="sidebar-menu">
             <ul>
-                @foreach ($menu as $item)
-                    @isset($item['title'])
-                        <li class="menu-title">{{ $item['title'] }}</li>
-                    @else
+                <li class="menu-title">Main Menu</li>
+                <li>
+                    <a href="{{ route('admin.dashboard') }}" class="waves-effect {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                        <i class="mdi mdi-airplay"></i>
+                        <span> Dashboard</span>
+                    </a>
+                </li>
+
+                @foreach ($grupMenu as $judul => $items)
+                    <li class="menu-title">{{ $judul }}</li>
+                    @foreach ($items as $item)
                         <li>
                             <a href="{{ route($item['route']) }}" class="waves-effect {{ request()->routeIs($item['active']) ? 'active' : '' }}">
                                 <i class="mdi {{ $item['icon'] }}"></i>
                                 <span> {{ $item['label'] }}</span>
                             </a>
                         </li>
-                    @endisset
+                    @endforeach
                 @endforeach
             </ul>
         </div>
