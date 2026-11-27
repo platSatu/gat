@@ -84,8 +84,12 @@
 
 {{-- Ditulis langsung (bukan @push) karena sidebar dimuat oleh layout setelah <head> selesai. --}}
 <style>
-    /* Submenu sidebar (Settings): isi sedikit menjorok, ikon kecil. */
-    #sidebar-menu .has_sub > ul > li > a { display: flex; align-items: center; gap: 8px; padding-left: 52px; font-size: 13.5px; }
-    #sidebar-menu .has_sub > ul > li > a i { font-size: 15px; opacity: .7; }
-    #sidebar-menu .has_sub > ul > li > a.active { font-weight: 600; }
+    /* Submenu sidebar (Settings): tanpa bulatan bawaan template (sudah ada ikon), item aktif diberi latar lembut. */
+    #sidebar-menu .has_sub > ul { padding: 4px 0 8px; }
+    #sidebar-menu .has_sub > ul > li > a { position: relative; display: flex; align-items: center; gap: 10px; margin: 1px 12px 1px 20px; padding: 9px 14px 9px 32px; border-radius: 8px; font-size: 13.5px; transition: background .15s, color .15s; }
+    #sidebar-menu .has_sub > ul > li > a i { width: 18px; margin: 0; font-size: 16px; text-align: center; opacity: .65; }
+    #sidebar-menu .has_sub > ul > li > a:hover { background: #f3f4f9; }
+    #sidebar-menu .has_sub > ul > li.active > a:before { content: none; }
+    #sidebar-menu .has_sub > ul > li.active > a { background: #eef0fb; color: #242c6d; font-weight: 600; }
+    #sidebar-menu .has_sub > ul > li.active > a i { opacity: 1; color: #242c6d; }
 </style>
