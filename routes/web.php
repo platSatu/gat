@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\AboutSectionController as AdminAboutSectionController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\HighlightController as AdminHighlightController;
+use App\Http\Controllers\Admin\PartnerController as AdminPartnerController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Frontend\AboutController;
@@ -85,6 +86,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // Tentang Kami: blok halaman /tentang (ID di URL admin), plus tombol naik/turun urutan.
     Route::resource('about', AdminAboutSectionController::class)->except('show')->scoped(['about' => 'id']);
     Route::post('about/{about:id}/move/{arah}', [AdminAboutSectionController::class, 'move'])->whereIn('arah', ['up', 'down'])->name('about.move');
+    // Pelayanan & Mitra: logo di beranda (ID di URL admin).
+    Route::resource('partners', AdminPartnerController::class)->except('show');
 });
 
 // Uji koneksi database lama + gambar (HANYA di local, APP_ENV=local). Boleh dihapus setelah selesai.
