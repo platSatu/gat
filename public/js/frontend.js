@@ -2,17 +2,23 @@
 (function () {
     'use strict';
 
-    /* Loading screen: tampil sekali per sesi (kunjungan berikutnya sudah dihapus di partials/loader).
-       Urutan (lihat frontend.css): tulisan diam 0,9 dtk -> bergeser ke kiri (1,9 dtk) -> lingkaran mengecil (2 dtk setelah mulai bergerak). */
+    /* Loading screen (pengaturan di admin Hero Beranda → Layar Pembuka; yang sudah pernah tampil dihapus di partials/loader).
+       Urutan (lihat frontend.css): tulisan diam (data-hold, bawaan 0,9 dtk) -> bergeser ke kiri (1,9 dtk) -> lingkaran mengecil (2 dtk setelah mulai bergerak).
+       data-mode: sesi = sekali per kunjungan, sekali = kunjungan pertama saja, beranda = setiap buka beranda. */
     var loader = document.querySelector('[data-loader]');
     if (loader) {
         document.body.classList.add('is-locked');
         window.addEventListener('load', function () {
-            var hold = 900; // tulisan diam dulu sebelum mulai bergerak
+            var hold = parseInt(loader.getAttribute('data-hold'), 10);
+            if (isNaN(hold) || hold < 0) { hold = 900; } // tulisan diam dulu sebelum mulai bergerak
+            var mode = loader.getAttribute('data-mode') || 'sesi';
             setTimeout(function () { loader.classList.add('is-done'); }, hold);
             setTimeout(function () { document.body.classList.remove('is-locked'); }, hold + 2200);
             setTimeout(function () { loader.remove(); }, hold + 3000);
-            try { sessionStorage.setItem('gatsu-loaded', '1'); } catch (e) {}
+            try {
+                if (mode === 'sekali') { localStorage.setItem('gatsu-loaded', '1'); }
+                else if (mode === 'sesi') { sessionStorage.setItem('gatsu-loaded', '1'); }
+            } catch (e) {}
         });
     }
 

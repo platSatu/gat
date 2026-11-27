@@ -129,6 +129,119 @@
                 </div>
             </div>
         </div>
+
+        {{-- Layar pembuka (loading screen) --}}
+        @php
+            $bahasaPembuka = \App\Models\Bahasa::daftar();
+            $bawaanPembuka = \App\Support\Situs::PEMBUKA_BAWAAN;
+        @endphp
+        <div class="card" id="layar-pembuka">
+            <div class="card-body">
+                <div class="d-flex flex-wrap justify-content-between align-items-start mb-2" style="gap: 8px;">
+                    <div>
+                        <h2 class="admin-heading mb-1" style="font-size: 22px;">Layar Pembuka</h2>
+                        <p class="text-muted mb-0">Layar biru dengan tulisan "GBI Gatsu" yang muncul saat website pertama kali dibuka. Isian kosong = tampilan bawaan seperti semula.</p>
+                    </div>
+                    <span @class(['badge', 'badge-success' => $pembuka['aktif'], 'badge-secondary' => ! $pembuka['aktif']])>{{ $pembuka['aktif'] ? 'Aktif' : 'Nonaktif' }}</span>
+                </div>
+
+                <form method="POST" action="{{ route('admin.hero.pembuka') }}" enctype="multipart/form-data" class="mt-3" id="form-pembuka">
+                    @csrf
+                    <div class="row">
+                        <div class="col-lg-7">
+                            <div class="custom-control custom-checkbox mb-3">
+                                <input type="checkbox" class="custom-control-input" id="pembuka_aktif" name="pembuka_aktif" value="1" @checked(old('pembuka_aktif', $pembuka['aktif']))>
+                                <label class="custom-control-label" for="pembuka_aktif">Tampilkan layar pembuka</label>
+                            </div>
+
+                            <label class="d-block">Tulisan</label>
+                            <div class="row">
+                                @foreach ($bahasaPembuka as $b)
+                                    @php $k = 'pembuka_teks_'.$b['kode']; @endphp
+                                    <div class="col-sm-6 form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend"><span class="input-group-text" title="{{ $b['nama'] }}">{{ strtoupper($b['kode']) }}</span></div>
+                                            <input type="text" name="{{ $k }}" value="{{ old($k, $pembuka['teks'][$b['kode']]) }}" maxlength="40"
+                                                placeholder="{{ $b['utama'] ? $bawaanPembuka['teks'] : 'Kosong = sama dengan Indonesia' }}"
+                                                @class(['form-control', 'is-invalid' => $errors->has($k)]) @if ($b['utama']) data-pv-teks @endif>
+                                        </div>
+                                        @error($k)<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pembuka_logo">Atau pakai logo <small class="text-muted">(menggantikan tulisan; PNG/WEBP transparan, maks 2 MB)</small></label>
+                                <input id="pembuka_logo" type="file" name="pembuka_logo" accept="image/png,image/webp,image/jpeg" @class(['form-control', 'is-invalid' => $errors->has('pembuka_logo')])>
+                                @error('pembuka_logo')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                @if ($pembuka['logo'])
+                                    <div class="custom-control custom-checkbox mt-1">
+                                        <input type="checkbox" class="custom-control-input" id="hapus_pembuka_logo" name="hapus_pembuka_logo" value="1">
+                                        <label class="custom-control-label" for="hapus_pembuka_logo">Hapus logo (kembali pakai tulisan)</label>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-4 form-group">
+                                    <label for="pembuka_warna_latar">Warna latar</label>
+                                    <div class="d-flex" style="gap: 6px;">
+                                        <input type="color" id="pembuka_warna_latar" name="pembuka_warna_latar" value="{{ old('pembuka_warna_latar', $pembuka['latar']) }}" class="pv-color" data-pv-latar>
+                                        <button type="button" class="btn btn-light btn-sm" data-pv-reset="pembuka_warna_latar" data-nilai="{{ $bawaanPembuka['latar'] }}" title="Kembalikan warna bawaan">Bawaan</button>
+                                    </div>
+                                    @error('pembuka_warna_latar')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                </div>
+                                <div class="col-sm-4 form-group">
+                                    <label for="pembuka_warna_teks">Warna tulisan</label>
+                                    <div class="d-flex" style="gap: 6px;">
+                                        <input type="color" id="pembuka_warna_teks" name="pembuka_warna_teks" value="{{ old('pembuka_warna_teks', $pembuka['warna_teks']) }}" class="pv-color" data-pv-warna>
+                                        <button type="button" class="btn btn-light btn-sm" data-pv-reset="pembuka_warna_teks" data-nilai="{{ $bawaanPembuka['warna_teks'] }}" title="Kembalikan warna bawaan">Bawaan</button>
+                                    </div>
+                                    @error('pembuka_warna_teks')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                </div>
+                                <div class="col-sm-4 form-group">
+                                    <label for="pembuka_diam">Tulisan diam dulu</label>
+                                    <div class="input-group">
+                                        <input type="number" id="pembuka_diam" name="pembuka_diam" min="0" max="5" step="0.1" value="{{ old('pembuka_diam', $pembuka['diam']) }}"
+                                            @class(['form-control', 'is-invalid' => $errors->has('pembuka_diam')]) data-pv-diam>
+                                        <div class="input-group-append"><span class="input-group-text">detik</span></div>
+                                    </div>
+                                    @error('pembuka_diam')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Kapan muncul</label>
+                                @foreach (\App\Support\Situs::PEMBUKA_MUNCUL as $nilai => $label)
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" class="custom-control-input" id="muncul_{{ $nilai }}" name="pembuka_muncul" value="{{ $nilai }}" @checked(old('pembuka_muncul', $pembuka['muncul']) === $nilai)>
+                                        <label class="custom-control-label" for="muncul_{{ $nilai }}">{{ $label }}@if ($nilai === $bawaanPembuka['muncul']) <small class="text-muted">(bawaan)</small>@endif</label>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Simpan Layar Pembuka</button>
+                        </div>
+
+                        <div class="col-lg-5">
+                            <label class="d-flex justify-content-between align-items-center">
+                                <span>Pratinjau</span>
+                                <button type="button" class="btn btn-light btn-sm" data-pv-putar><i class="mdi mdi-replay"></i> Putar ulang</button>
+                            </label>
+                            <div class="pv-loader" data-pv>
+                                <div class="pv-loader__page">Halaman website</div>
+                                <span class="pv-loader__circle"></span>
+                                <span class="pv-loader__mask">
+                                    <img class="pv-loader__logo" alt="" @if ($pembuka['logo']) src="{{ asset($pembuka['logo']) }}" @else hidden @endif data-pv-logo>
+                                    <span class="pv-loader__text" @if ($pembuka['logo']) hidden @endif data-pv-tulisan>{{ $pembuka['teks'][$bahasaPembuka->first()['kode']] ?: $bawaanPembuka['teks'] }}</span>
+                                </span>
+                            </div>
+                            <small class="text-muted d-block mt-2">Pratinjau diperkecil. Di website tampil memenuhi layar, total ±{{ number_format((float) $pembuka['diam'] + 3, 1, ',', '') }} detik.</small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     @endunless
 @endsection
 
@@ -141,7 +254,66 @@
         .hero-preview { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 10px; background: #1f2433; }
         .hero-preview video, .hero-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .hero-preview__tag { position: absolute; left: 10px; top: 10px; padding: 2px 10px; border-radius: 999px; background: rgba(0,0,0,.55); color: #fff; font-size: 12px; }
+
+        /* Pratinjau layar pembuka (tiruan kecil dari .site-loader di frontend.css) */
+        .pv-color { width: 52px; height: 38px; padding: 2px; border: 1px solid #dee2e6; border-radius: 6px; background: #fff; cursor: pointer; }
+        .pv-loader { position: relative; display: grid; place-items: center; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 10px; background: #f4f5f8; border: 1px solid #e9ebf2; }
+        .pv-loader__page { position: absolute; inset: 0; display: grid; place-items: center; color: #9aa0b2; font-size: 13px; }
+        .pv-loader__circle { position: absolute; top: 50%; left: 50%; width: 250%; aspect-ratio: 1; border-radius: 50%; background: var(--pv-bg, #466883);
+            transform: translate(-50%, -50%) scale(1); transition: transform .8s ease 2s; }
+        .pv-loader__mask { position: relative; display: block; overflow: hidden; padding: .05em .1em; }
+        .pv-loader__text { display: block; color: var(--pv-fg, #ece3d4); font-size: clamp(1.6rem, 3.2vw, 2.6rem); font-weight: 700; line-height: 1.15; font-family: Inter, system-ui, sans-serif;
+            transition: transform 1.9s cubic-bezier(.77, 0, .175, 1); }
+        .pv-loader__logo { display: block; height: clamp(2rem, 4vw, 3.4rem); width: auto; max-width: 80%; object-fit: contain; transition: transform 1.9s cubic-bezier(.77, 0, .175, 1); }
+        .pv-loader.is-done .pv-loader__text, .pv-loader.is-done .pv-loader__logo { transform: translateX(-100%); }
+        .pv-loader.is-done .pv-loader__circle { transform: translate(-50%, -50%) scale(0); }
+        .pv-loader.is-reset .pv-loader__text, .pv-loader.is-reset .pv-loader__logo, .pv-loader.is-reset .pv-loader__circle { transition: none; }
+        .pv-loader.is-off { opacity: .35; }
+        .pv-loader [hidden] { display: none !important; }
     </style>
+@endpush
+
+@push('scripts')
+    <script>
+        (function () {
+            var pv = document.querySelector('[data-pv]');
+            if (! pv) { return; }
+            var q = function (s) { return document.querySelector(s); };
+            var teks = q('[data-pv-teks]'), latar = q('[data-pv-latar]'), warna = q('[data-pv-warna]'), diam = q('[data-pv-diam]');
+            var tulisan = q('[data-pv-tulisan]'), logo = q('[data-pv-logo]'), fileLogo = q('#pembuka_logo'), aktif = q('#pembuka_aktif');
+            var bawaan = @json($bawaanPembuka['teks']), timer = [];
+
+            function terapkan() {
+                pv.style.setProperty('--pv-bg', latar.value);
+                pv.style.setProperty('--pv-fg', warna.value);
+                tulisan.textContent = (teks && teks.value.trim()) || bawaan;
+                pv.classList.toggle('is-off', ! aktif.checked);
+            }
+            function putar() {
+                timer.forEach(clearTimeout); timer = [];
+                pv.classList.add('is-reset'); pv.classList.remove('is-done');
+                void pv.offsetWidth;   // mulai ulang animasi
+                pv.classList.remove('is-reset');
+                var tahan = Math.max(0, parseFloat(diam.value || '0.9')) * 1000;
+                timer.push(setTimeout(function () { pv.classList.add('is-done'); }, tahan));
+                timer.push(setTimeout(putar, tahan + 4500));   // ulangi terus supaya mudah dilihat
+            }
+
+            [teks, latar, warna, diam, aktif].forEach(function (el) { if (el) { el.addEventListener('input', terapkan); el.addEventListener('change', terapkan); } });
+            document.querySelectorAll('[data-pv-reset]').forEach(function (b) {
+                b.addEventListener('click', function () { var i = document.getElementById(b.getAttribute('data-pv-reset')); i.value = b.getAttribute('data-nilai'); terapkan(); });
+            });
+            fileLogo.addEventListener('change', function () {
+                if (! fileLogo.files[0]) { return; }
+                logo.src = URL.createObjectURL(fileLogo.files[0]); logo.hidden = false; tulisan.hidden = true; putar();
+            });
+            var hapus = q('#hapus_pembuka_logo');
+            if (hapus) { hapus.addEventListener('change', function () { logo.hidden = hapus.checked; tulisan.hidden = ! hapus.checked; }); }
+            q('[data-pv-putar]').addEventListener('click', putar);
+
+            terapkan(); putar();
+        })();
+    </script>
 @endpush
 
 @include('backend.partials.crud-styles')

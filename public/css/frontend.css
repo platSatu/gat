@@ -237,7 +237,7 @@ body.is-locked { overflow: hidden; }
 .site-loader__circle { /* lingkaran raksasa yang menutup layar, lalu mengecil ke tengah */
     position: absolute; top: 50%; left: 50%;
     width: 250vmax; height: 250vmax;
-    border-radius: 50%; background: var(--slate);
+    border-radius: 50%; background: var(--loader-bg, var(--slate));   /* --loader-bg / --loader-fg dari admin (Hero Beranda) */
     transform: translate(-50%, -50%) scale(1);
     transition: transform .8s ease 2s;
 }
@@ -245,10 +245,16 @@ body.is-locked { overflow: hidden; }
 .site-loader__mask { position: relative; display: block; overflow: hidden; padding: .05em .1em; }
 .site-loader__text {
     display: block;
-    color: var(--cream); font-size: clamp(3rem, 7vw, 6.25rem); font-weight: 700; line-height: 1.15;
+    color: var(--loader-fg, var(--cream)); font-size: clamp(3rem, 7vw, 6.25rem); font-weight: 700; line-height: 1.15;
     transition: transform 1.9s cubic-bezier(.77, 0, .175, 1);
 }
-.site-loader.is-done .site-loader__text { transform: translateX(-100%); }
+/* Logo sebagai pengganti tulisan (diunggah di admin), bergerak sama seperti tulisan. */
+.site-loader__logo {
+    display: block; width: auto; height: clamp(3.5rem, 9vw, 7.5rem); max-width: 80vw; object-fit: contain;
+    transition: transform 1.9s cubic-bezier(.77, 0, .175, 1);
+}
+.site-loader.is-done .site-loader__text,
+.site-loader.is-done .site-loader__logo { transform: translateX(-100%); }
 .site-loader.is-done .site-loader__circle { transform: translate(-50%, -50%) scale(0); }
 
 /* 6. Beranda ----------------------------------------------------------- */

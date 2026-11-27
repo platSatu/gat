@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bahasa;
 use App\Models\HeroSlide;
 use App\Models\Pengaturan;
+use App\Support\Situs;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -13,7 +15,8 @@ use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 /**
- * Hero beranda: kartu sambutan (tabel hero_slides + terjemahan) dan video/gambar latar (tabel pengaturan).
+ * Hero beranda: kartu sambutan (tabel hero_slides + terjemahan), video/gambar latar, dan layar pembuka
+ * (loading screen) — dua yang terakhir disimpan di tabel pengaturan.
  * File latar baru disimpan di public/uploads/hero/; yang dihapus otomatis hanya file di folder itu
  * (file bawaan public/videos/hero.mp4 & public/images/home/hero.jpg tidak disentuh).
  */
@@ -30,6 +33,7 @@ class HeroController extends Controller
             'slides' => $siap ? HeroSlide::query()->urut()->withCount('translations as punya_en')->get() : collect(),
             'video' => $siap ? Pengaturan::ambil('hero_video') : null,
             'gambar' => $siap ? Pengaturan::ambil('hero_gambar') : null,
+            'pembuka' => $this->isianPembuka($siap),
         ]);
     }
 
@@ -120,6 +124,82 @@ class HeroController extends Controller
         }
 
         return redirect()->route('admin.hero.index')->with('success', 'Latar hero berhasil disimpan.');
+    }
+
+    /** Simpan pengaturan layar pembuka (loading screen). Isian kosong = nilai bawaan seperti semula. */
+    public function pembuka(Request $request): RedirectResponse
+    {
+        $this->pastikanTabel();
+
+        $aturan = [
+            'pembuka_aktif' => ['nullable', 'boolean'],
+            'pembuka_warna_latar' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            'pembuka_warna_teks' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            'pembuka_diam' => ['nullable', 'numeric', 'min:0', 'max:5'],
+            'pembuka_muncul' => ['required', 'in:'.implode(',', array_keys(Situs::PEMBUKA_MUNCUL))],
+            'pembuka_logo' => ['nullable', 'image', 'mimes:png,webp,jpg,jpeg', 'max:2048'],
+            'hapus_pembuka_logo' => ['nullable', 'boolean'],
+        ];
+        foreach (Bahasa::daftar() as $b) {
+            $aturan['pembuka_teks_'.$b['kode']] = ['nullable', 'string', 'max:40'];
+        }
+
+        $request->validate($aturan, [
+            'pembuka_warna_latar.regex' => 'Warna latar harus kode warna seperti #466883.',
+            'pembuka_warna_teks.regex' => 'Warna teks harus kode warna seperti #ece3d4.',
+        ], ['pembuka_diam' => 'Lama diam', 'pembuka_logo' => 'Logo']);
+
+        // Warna yang sama dengan bawaan tidak disimpan, supaya tetap ikut warna tema kalau tema diubah.
+        $warna = fn ($k, $bawaan) => strtolower((string) $request->input($k)) === $bawaan ? null : $request->input($k);
+        $diam = $request->input('pembuka_diam');
+
+        $data = [
+            'pembuka_aktif' => $request->boolean('pembuka_aktif') ? null : '0',
+            'pembuka_warna_latar' => $warna('pembuka_warna_latar', Situs::PEMBUKA_BAWAAN['latar']),
+            'pembuka_warna_teks' => $warna('pembuka_warna_teks', Situs::PEMBUKA_BAWAAN['warna_teks']),
+            'pembuka_diam' => is_numeric($diam) && (float) $diam !== (float) Situs::PEMBUKA_BAWAAN['diam'] ? (string) (float) $diam : null,
+            'pembuka_muncul' => $request->input('pembuka_muncul') === Situs::PEMBUKA_BAWAAN['muncul'] ? null : $request->input('pembuka_muncul'),
+        ];
+        foreach (Bahasa::daftar() as $b) {
+            $teks = trim((string) $request->input('pembuka_teks_'.$b['kode']));
+            $data['pembuka_teks_'.$b['kode']] = $teks === Situs::PEMBUKA_BAWAAN['teks'] ? null : $teks;
+        }
+
+        $lama = Pengaturan::ambil('pembuka_logo');
+        if ($request->hasFile('pembuka_logo')) {
+            $file = $request->file('pembuka_logo');
+            $nama = 'pembuka-logo-'.now()->format('YmdHis').'-'.Str::lower(Str::random(4)).'.'.strtolower($file->getClientOriginalExtension());
+            $file->move(public_path(self::FOLDER), $nama);
+            $data['pembuka_logo'] = self::FOLDER.'/'.$nama;
+            $this->hapusFileLokal($lama);
+        } elseif ($request->boolean('hapus_pembuka_logo')) {
+            $data['pembuka_logo'] = null;
+            $this->hapusFileLokal($lama);
+        }
+
+        Pengaturan::simpanBanyak($data);
+
+        return redirect()->route('admin.hero.index')->with('success', 'Layar pembuka berhasil disimpan.');
+    }
+
+    /** Nilai untuk form layar pembuka (kosong diisi bawaan supaya terlihat apa yang sedang dipakai). */
+    private function isianPembuka(bool $siap): array
+    {
+        $b = Situs::PEMBUKA_BAWAAN;
+        $hasil = [
+            'aktif' => ! $siap || Pengaturan::ambil('pembuka_aktif') !== '0',
+            'latar' => ($siap ? Pengaturan::ambil('pembuka_warna_latar') : null) ?: $b['latar'],
+            'warna_teks' => ($siap ? Pengaturan::ambil('pembuka_warna_teks') : null) ?: $b['warna_teks'],
+            'diam' => ($siap ? Pengaturan::ambil('pembuka_diam') : null) ?: $b['diam'],
+            'muncul' => ($siap ? Pengaturan::ambil('pembuka_muncul') : null) ?: $b['muncul'],
+            'logo' => $siap ? Pengaturan::ambil('pembuka_logo') : null,
+            'teks' => [],
+        ];
+        foreach (Bahasa::daftar() as $bhs) {
+            $hasil['teks'][$bhs['kode']] = $siap ? Pengaturan::ambil('pembuka_teks_'.$bhs['kode']) : null;
+        }
+
+        return $hasil;
     }
 
     private function pastikanTabel(): void

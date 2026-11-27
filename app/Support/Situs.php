@@ -100,6 +100,38 @@ class Situs
         return self::domainUtama();
     }
 
+    /** Pilihan kapan layar pembuka muncul (kunci => keterangan di admin). */
+    public const PEMBUKA_MUNCUL = [
+        'sesi' => 'Sekali per kunjungan (tab/jendela baru)',
+        'beranda' => 'Setiap kali beranda dibuka',
+        'sekali' => 'Hanya kunjungan pertama di browser itu',
+    ];
+
+    /** Nilai bawaan layar pembuka = tampilan dari Figma (dipakai kalau isian di admin kosong). */
+    public const PEMBUKA_BAWAAN = ['teks' => 'GBI Gatsu', 'latar' => '#466883', 'warna_teks' => '#ece3d4', 'diam' => 0.9, 'muncul' => 'sesi'];
+
+    /**
+     * Pengaturan layar pembuka (loading screen) untuk halaman publik, diatur di admin Hero Beranda.
+     * Isian kosong = nilai bawaan (lihat PEMBUKA_BAWAAN), jadi tampilannya sama seperti sebelum ada pengaturan.
+     *
+     * @return array{aktif: bool, teks: string, logo: ?string, latar: ?string, warna_teks: ?string, diam: int, muncul: string}
+     */
+    public static function pembuka(): array
+    {
+        $muncul = Pengaturan::ambil('pembuka_muncul');
+        $diam = Pengaturan::ambil('pembuka_diam');
+
+        return [
+            'aktif' => Pengaturan::ambil('pembuka_aktif') !== '0',
+            'teks' => self::perBahasa('pembuka_teks') ?: self::PEMBUKA_BAWAAN['teks'],
+            'logo' => ($logo = Pengaturan::ambil('pembuka_logo')) ? asset($logo) : null,
+            'latar' => Pengaturan::ambil('pembuka_warna_latar'),          // null = warna CSS bawaan
+            'warna_teks' => Pengaturan::ambil('pembuka_warna_teks'),      // null = warna CSS bawaan
+            'diam' => (int) round((is_numeric($diam) ? (float) $diam : self::PEMBUKA_BAWAAN['diam']) * 1000),   // milidetik
+            'muncul' => isset(self::PEMBUKA_MUNCUL[$muncul]) ? $muncul : self::PEMBUKA_BAWAAN['muncul'],
+        ];
+    }
+
     public static function ambil(string $kunci): ?string
     {
         return Pengaturan::ambil($kunci);

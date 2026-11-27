@@ -102,8 +102,9 @@ Route::prefix('dashboard/admin')->name('admin.')->middleware(['auth', 'akses.men
     // Tentang Kami: blok halaman /tentang (ID di URL admin), plus tombol naik/turun urutan.
     Route::resource('about', AdminAboutSectionController::class)->except('show')->scoped(['about' => 'id']);
     Route::post('about/{about:id}/move/{arah}', [AdminAboutSectionController::class, 'move'])->whereIn('arah', ['up', 'down'])->name('about.move');
-    // Hero beranda: kartu sambutan (urutan naik/turun) + video/gambar latar.
+    // Hero beranda: kartu sambutan (urutan naik/turun) + video/gambar latar + layar pembuka (loading screen).
     Route::post('hero/latar', [AdminHeroController::class, 'latar'])->name('hero.latar');
+    Route::post('hero/pembuka', [AdminHeroController::class, 'pembuka'])->name('hero.pembuka');
     Route::post('hero/{hero}/move/{arah}', [AdminHeroController::class, 'move'])->whereIn('arah', ['up', 'down'])->name('hero.move');
     Route::resource('hero', AdminHeroController::class)->except('show')->parameters(['hero' => 'hero']);
     // Pelayanan & Mitra: logo di beranda (ID di URL admin).
